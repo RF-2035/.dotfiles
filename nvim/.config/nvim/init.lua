@@ -264,6 +264,31 @@ require('lazy').setup({
     end,
     ft = { 'markdown' },
   },
+  -- {
+  --   'akinsho/bufferline.nvim',
+  --   version = '*',
+  --   dependencies = 'nvim-tree/nvim-web-devicons',
+  --   config = function()
+  --     vim.opt.termguicolors = true
+  --     require('bufferline').setup {
+  --       options = {
+  --         offsets = {
+  --           {
+  --             filetype = 'NvimTree',
+  --             text = 'Explorer',
+  --             -- separator = true,
+  --             text_align = 'center',
+  --           },
+  --         },
+  --         diagnostics = 'nvim_lsp',
+  --         separator_style = { '', '' },
+  --         -- modified_icon = '●',
+  --         -- show_close_icon = false,
+  --         -- show_buffer_close_icons = false,
+  --       },
+  --     }
+  --   end,
+  -- },
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -968,6 +993,13 @@ require('lazy').setup({
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
+
+      -- ┌────────────────┐
+      -- │ Manually Added │
+      -- └────────────────┘
+      -- Enable mini.files
+      require('mini.files').setup()
+      vim.keymap.set('n', '<leader>e', ':lua MiniFiles.open()<CR>', { desc = 'Explorer', silent = true })
     end,
   },
   { -- Highlight, edit, and navigate code
