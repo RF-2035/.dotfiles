@@ -9,6 +9,9 @@ export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
 export EDITOR=/usr/bin/nvim
 export VISUAL=/usr/bin/nvim
 
+export QT_STYLE_OVERRIDE=kvantum
+export QT_QPA_PLATFORM=wayland
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -19,7 +22,7 @@ export VISUAL=/usr/bin/nvim
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 # PS1='[\u@\h \W]\$ '
-PS1='\e[32;1m\u@\h: \e[36m\W\e[0m\$ '
+PS1='\[\e[32;1m\]\u@\h: \[\e[36m\]\W\[\e[0m\]\$ '
 
 # ┌───────────────┐
 # │ Shell Options │
