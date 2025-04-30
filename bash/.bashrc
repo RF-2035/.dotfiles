@@ -6,11 +6,13 @@ export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
 
+export SHELL=/usr/bin/bash
 export EDITOR=/usr/bin/nvim
 export VISUAL=/usr/bin/nvim
 
-export QT_STYLE_OVERRIDE=kvantum
+export QT_STYLE_OVERRIDE=adwaita
 export QT_QPA_PLATFORM=wayland
+export QT_WAYLAND_DECORATION=adwaita
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
