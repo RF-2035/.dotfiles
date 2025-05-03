@@ -254,41 +254,39 @@ require('lazy').setup({
     build = 'cd app && yarn install',
     init = function()
       vim.g.mkdp_filetypes = { 'markdown' }
+      -- Set AutoStart and Reuse Preview Links
+      vim.g.mkdp_auto_start = 1
+      vim.g.mkdp_auto_close = 0
+      vim.g.mkdp_combine_preview = 1
       -- Write EchoUrl
-      -- vim.cmd([[
-      --   function! EchoUrl(url)
-      --     echom a:url
-      --   endfunction
-      -- ]])
-      -- vim.g.mkdp_browserfunc = "g:EchoUrl"
+      vim.cmd [[
+        function! EchoUrl(url)
+          if has('clipboard')
+            let @+ = a:url
+          endif
+          echom a:url
+        endfunction
+      ]]
+      vim.g.mkdp_browserfunc = 'g:EchoUrl'
     end,
     ft = { 'markdown' },
   },
-  -- {
-  --   'akinsho/bufferline.nvim',
-  --   version = '*',
-  --   dependencies = 'nvim-tree/nvim-web-devicons',
-  --   config = function()
-  --     vim.opt.termguicolors = true
-  --     require('bufferline').setup {
-  --       options = {
-  --         offsets = {
-  --           {
-  --             filetype = 'NvimTree',
-  --             text = 'Explorer',
-  --             -- separator = true,
-  --             text_align = 'center',
-  --           },
-  --         },
-  --         diagnostics = 'nvim_lsp',
-  --         separator_style = { '', '' },
-  --         -- modified_icon = '●',
-  --         -- show_close_icon = false,
-  --         -- show_buffer_close_icons = false,
-  --       },
-  --     }
-  --   end,
-  -- },
+  {
+    'akinsho/bufferline.nvim',
+    version = '*',
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    config = function()
+      vim.opt.termguicolors = true
+      local bufferline = require 'bufferline'
+      bufferline.setup {
+        options = {
+          -- style_preset = bufferline.style_preset.minimal,
+          always_show_bufferline = false,
+          auto_toggle_bufferline = true,
+        },
+      }
+    end,
+  },
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
