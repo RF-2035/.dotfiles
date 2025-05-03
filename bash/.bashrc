@@ -11,8 +11,11 @@ export EDITOR=/usr/bin/nvim
 export VISUAL=/usr/bin/nvim
 
 export QT_STYLE_OVERRIDE=adwaita
-export QT_QPA_PLATFORM=wayland
-export QT_WAYLAND_DECORATION=adwaita
+
+if [ "$XDG_SESSION_TYPE" = 'wayland' ]; then
+    export QT_QPA_PLATFORM=wayland
+    export QT_WAYLAND_DECORATION=adwaita
+fi
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
