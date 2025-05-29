@@ -4,6 +4,8 @@
 
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
 
 export SHELL=/usr/bin/bash
@@ -27,7 +29,8 @@ fi
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 # PS1='[\u@\h \W]\$ '
-PS1='\[\e[32;1m\]\u@\h: \[\e[36m\]\W\[\e[0m\]\$ '
+# PS1='\[\e[32;1m\]\u@\h: \[\e[36m\]\W\[\e[0m\]\$ '
+PS1='\[\e[38;2;128;128;126;1m\]\u@\h: \[\e[38;2;44;45;45;1m\]\W\[\e[0m\]\$ '
 
 # ┌───────────────┐
 # │ Shell Options │
