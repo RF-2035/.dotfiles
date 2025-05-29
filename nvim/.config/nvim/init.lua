@@ -43,6 +43,18 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 vim.opt.confirm = true
 
+-- ┌───────────┐
+-- │ Platforms │
+-- └───────────┘
+
+-- Windows-specific terminal setup
+if vim.fn.has 'win32' == 1 then
+  vim.opt.shell = 'pwsh.exe'
+  vim.opt.shellcmdflag = '-NoLogo -ExecutionPolicy RemoteSigned -Command'
+  vim.opt.shellquote = ''
+  vim.opt.shellxquote = ''
+end
+
 -- ┌───────────────┐
 -- │ Basic Keymaps │
 -- └───────────────┘
@@ -206,6 +218,14 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>bh', function()
         vim.cmd 'BufferLineCloseLeft'
       end, { desc = 'Close Left', silent = true })
+
+      vim.keymap.set('n', '<leader>b<Tab>', function()
+        vim.cmd 'BufferLineCycleNext'
+      end, { desc = 'Cycle Next', silent = true })
+
+      vim.keymap.set('n', '<leader>b<S-Tab>', function()
+        vim.cmd 'BufferLineCyclePrev'
+      end, { desc = 'Cycle Prev', silent = true })
     end,
   },
 
