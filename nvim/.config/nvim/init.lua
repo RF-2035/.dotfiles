@@ -65,8 +65,9 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- NOTE: <leader>q → diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Quickfix' })
 
--- NOTE: <Esc><Esc> → exit terminal mode
+-- NOTE: <Esc><Esc> or `` → exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '``', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- NOTE: CTRL+<hjkl> → move focus
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
@@ -125,12 +126,20 @@ vim.keymap.set('n', '<leader>te', function()
     -- Remove swap mappings (restore defaults)
     vim.keymap.del('i', '`')
     vim.keymap.del('i', '<Esc>')
+    vim.keymap.del('v', '`')
+    vim.keymap.del('v', '<Esc>')
+    vim.keymap.del('t', '`')
+    vim.keymap.del('t', '<Esc>')
     keys_swapped = false
     vim.notify('Key swap: OFF (` and Esc restored)', vim.log.levels.INFO)
   else
     -- Add swap mappings
     vim.keymap.set('i', '`', '<Esc>', { desc = 'Escape (swapped)' })
     vim.keymap.set('i', '<Esc>', '`', { desc = 'Backtick (swapped)' })
+    vim.keymap.set('v', '`', '<Esc>', { desc = 'Escape (swapped)' })
+    vim.keymap.set('v', '<Esc>', '`', { desc = 'Backtick (swapped)' })
+    vim.keymap.set('t', '`', '<Esc>', { desc = 'Escape (swapped)' })
+    vim.keymap.set('t', '<Esc>', '`', { desc = 'Backtick (swapped)' })
     keys_swapped = true
     vim.notify('Key swap: ON (` acts as Esc)', vim.log.levels.INFO)
   end
