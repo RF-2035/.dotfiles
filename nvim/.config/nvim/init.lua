@@ -117,6 +117,25 @@ vim.keymap.set('n', '<leader>tp', function()
   end
 end, { desc = 'Clipboard', silent = true })
 
+-- State tracking for key swap
+local keys_swapped = false
+
+vim.keymap.set('n', '<leader>te', function()
+  if keys_swapped then
+    -- Remove swap mappings (restore defaults)
+    vim.keymap.del('i', '`')
+    vim.keymap.del('i', '<Esc>')
+    keys_swapped = false
+    vim.notify('Key swap: OFF (` and Esc restored)', vim.log.levels.INFO)
+  else
+    -- Add swap mappings
+    vim.keymap.set('i', '`', '<Esc>', { desc = 'Escape (swapped)' })
+    vim.keymap.set('i', '<Esc>', '`', { desc = 'Backtick (swapped)' })
+    keys_swapped = true
+    vim.notify('Key swap: ON (` acts as Esc)', vim.log.levels.INFO)
+  end
+end, { desc = 'Escape/Backtick', silent = true })
+
 -- highlight on yank
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
