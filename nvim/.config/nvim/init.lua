@@ -715,19 +715,19 @@ require('lazy').setup({
     },
   },
 
-  -- ┌─────────────┐
-  -- │ ColorScheme │
-  -- └─────────────┘
+  -- ┌────────────┐
+  -- │ Appearence │
+  -- └────────────┘
   {
     'Mofiqul/adwaita.nvim',
-    -- 'iissnan/tangoX',
     lazy = false,
     priority = 1000,
 
-    -- configure and set on startup
     config = function()
+      -- apply the colorscheme
       vim.cmd 'colorscheme adwaita'
-      -- vim.cmd 'colorscheme tangoX'
+
+      -- use underline to indicate document highlight
       vim.api.nvim_create_autocmd({ 'ColorScheme', 'LspAttach' }, {
         callback = function()
           vim.api.nvim_set_hl(0, 'LspReferenceText', { bg = 'NONE', underline = true, force = true })
@@ -738,52 +738,58 @@ require('lazy').setup({
       })
     end,
   },
-  -- Highlight todo, notes, etc in comments
+
+  -- transparent background
+  {
+    'xiyaowong/transparent.nvim',
+
+    config = function()
+      require('transparent').setup {
+        groups = {
+          'Normal',
+        },
+        extra_groups = {},
+        exclude_groups = {},
+        on_clear = function() end,
+      }
+      vim.g.transparent_enabled = true
+    end,
+  },
+
+  -- todo comments highlight
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
-  { -- Collection of various small independent plugins/modules
+  -- ┌───────────┐
+  -- │ mini.nvim │
+  -- └───────────┘
+  {
     'echasnovski/mini.nvim',
     config = function()
-      -- Better Around/Inside textobjects
-      --
-      -- Examples:
-      --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
-      --  - ci'  - [C]hange [I]nside [']quote
+      -- around/inside
       require('mini.ai').setup { n_lines = 500 }
 
-      -- Add/delete/replace surroundings (brackets, quotes, etc.)
-      --
-      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-      -- - sd'   - [S]urround [D]elete [']quotes
-      -- - sr)'  - [S]urround [R]eplace [)] [']
+      -- surround
       require('mini.surround').setup()
 
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
+      -- statusline
       local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
       statusline.setup { use_icons = vim.g.have_nerd_font }
 
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
+      -- statusline set cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
         return '%2l:%-2v'
       end
 
-      -- ... and there is more!
-      --  Check out: https://github.com/echasnovski/mini.nvim
-
-      -- ┌────────────┐
-      -- │ mini.files │
-      -- └────────────┘
+      -- files
       require('mini.files').setup()
       vim.keymap.set('n', '<leader>e', ':lua MiniFiles.open()<CR>', { desc = 'Explorer', silent = true })
     end,
   },
+
+  -- ┌─────────────────┐
+  -- │ nvim-treesitter │
+  -- └─────────────────┘
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
