@@ -62,9 +62,6 @@ end
 -- NOTE: <Esc> → clear highlights on search
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- NOTE: <leader>q → diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Quickfix' })
-
 -- NOTE: <Esc><Esc> or `` → exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 vim.keymap.set('t', '``', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
@@ -105,7 +102,7 @@ vim.keymap.set('n', '<leader>tn', function()
   vim.cmd 'startinsert'
 end, { desc = 'Nnn', silent = true })
 
-vim.keymap.set('n', '<leader>tv', '<cmd>MarkdownPreviewToggle<CR>', { desc = 'Preview' })
+-- <leader>tp → toggle clipboard sharing
 
 vim.keymap.set('n', '<leader>tp', function()
   local current_clipboard = vim.opt.clipboard:get()
@@ -118,7 +115,8 @@ vim.keymap.set('n', '<leader>tp', function()
   end
 end, { desc = 'Clipboard', silent = true })
 
--- State tracking for key swap
+-- <leader>te → toggle swapping ` and <Esc>
+
 local keys_swapped = false
 
 vim.keymap.set('n', '<leader>te', function()
@@ -144,6 +142,94 @@ vim.keymap.set('n', '<leader>te', function()
     vim.notify('Key swap: ON (` acts as Esc)', vim.log.levels.INFO)
   end
 end, { desc = 'Escape/Backtick', silent = true })
+
+-- NOTE: <leader>c → commands
+
+-- Paste as Commands
+vim.keymap.set('n', '<leader>ce', function()
+  local cmds = vim.fn.getreg '"'
+  if not cmds or #cmds == 0 then
+    vim.notify('Clipboard is empty.', vim.log.levels.WARN)
+    return
+  end
+  vim.cmd 'redraw!'
+  local message = 'Execute?\n\n' .. cmds
+  local choice = vim.fn.confirm(message, '&Yes\n&No', 2, 'Question')
+  vim.cmd 'redraw!'
+  if choice == 1 then
+    vim.fn.setreg('"', cmds)
+    vim.cmd 'normal! @"'
+    -- else
+    --   vim.notify('Execution cancelled.', vim.log.levels.INFO)
+  end
+end, { desc = 'Execute', silent = true })
+
+-- NOTE: <leader>l → LSP
+
+vim.keymap.set('n', '<leader>ll', vim.diagnostic.setloclist, { desc = 'List Locations' })
+-- <leader>lf → LSP format (set under `conform.nvim`)
+
+-- ┌──────────────────────┐
+-- │ Keymaps for Markdown │
+-- └──────────────────────┘
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'markdown',
+  callback = function(event)
+    vim.keymap.set('n', '<leader>cv', '<cmd>MarkdownPreviewToggle<CR>', { desc = 'Preview', buffer = event.buf })
+
+    vim.keymap.set('n', '<leader>cm', function()
+      vim.fn.set_cmdline "for i in range(, , -1) | execute '%%s/c' . i . '::/c' . (i + 1) . '::/g' | endfor"
+      vim.fn.set_cmdline_pos(string.len 'for i in range(' + 1)
+    end, { desc = 'Move Clozes', buffer = event.buf, silent = true })
+
+    vim.keymap.set('n', '<leader>cy', function()
+      local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+      if not buffer_content or #buffer_content == 0 then
+        vim.notify('Buffer is empty, nothing to convert.', vim.log.levels.WARN)
+        return
+      end
+      local content_string = table.concat(buffer_content, '\n')
+      local pandoc_cmd = {
+        'pandoc',
+        '--from=markdown',
+        '--to=html',
+        '-o',
+        '-',
+        '--katex',
+        '--columns',
+        '10000',
+      }
+      vim.notify('Running Pandoc...', vim.log.levels.INFO)
+      vim.system(pandoc_cmd, {
+        stdin = content_string,
+        text = true,
+      }, function(result)
+        vim.schedule(function()
+          if result.code == 0 then
+            vim.fn.setreg('+', result.stdout)
+            vim.notify('Pandoc conversion complete. HTML copied to clipboard.', vim.log.levels.INFO)
+          else
+            local error_message = 'Pandoc failed with code: ' .. result.code
+            if result.stderr and #result.stderr > 0 then
+              error_message = error_message .. '\n---[Stderr]---\n' .. result.stderr
+            end
+            if result.stdout and #result.stdout > 0 then
+              error_message = error_message .. '\n---[Stdout]---\n' .. result.stdout
+            end
+            vim.notify(error_message, vim.log.levels.ERROR, {
+              title = 'Pandoc Error',
+            })
+          end
+        end)
+      end)
+    end, { desc = 'Yank HTML', buffer = event.buf, silent = true })
+  end,
+})
+
+-- ┌───────────────┐
+-- │ Optimizations │
+-- └───────────────┘
 
 -- highlight on yank
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -172,6 +258,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   { 'google/vim-searchindex' },
+  { 'github/copilot.vim' },
   { 'brianhuster/live-preview.nvim' },
   {
     -- NOTE: <leader>tv → markdown preview toggle
@@ -316,6 +403,8 @@ require('lazy').setup({
         { '<leader>t', group = 'Toggle' },
         { '<leader>h', group = 'Git Hunk', mode = { 'n', 'v' } },
         { '<leader>b', group = 'Buffer' },
+        { '<leader>c', group = 'Commands' },
+        { '<leader>l', group = 'LSP' },
       },
     },
   },
@@ -583,10 +672,10 @@ require('lazy').setup({
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
-    -- NOTE: <leader>f → format buffer
+    -- NOTE: <leader>lf → format buffer
     keys = {
       {
-        '<leader>f',
+        '<leader>lf',
         function()
           require('conform').format { async = true, lsp_format = 'fallback' }
         end,
@@ -727,13 +816,37 @@ require('lazy').setup({
       -- apply the colorscheme
       vim.cmd 'colorscheme adwaita'
 
-      -- use underline to indicate document highlight
       vim.api.nvim_create_autocmd({ 'ColorScheme', 'LspAttach' }, {
         callback = function()
+          -- use underline to indicate document highlight
           vim.api.nvim_set_hl(0, 'LspReferenceText', { bg = 'NONE', underline = true, force = true })
           vim.api.nvim_set_hl(0, 'LspReferenceRead', { bg = 'NONE', underline = true, force = true })
           vim.api.nvim_set_hl(0, 'LspReferenceWrite', { bg = 'NONE', underline = true, force = true })
           vim.api.nvim_set_hl(0, 'LspDocumentHighlight', { bg = 'NONE', underline = true, force = true })
+
+          -- set bufferline highlight groups
+          local tab_sel_hl = vim.api.nvim_get_hl(0, { name = 'TabLineSel' })
+          local selected_style = { fg = tab_sel_hl.fg, bg = tab_sel_hl.bg }
+
+          require('bufferline').setup {
+            options = {
+              always_show_bufferline = false,
+              auto_toggle_bufferline = true,
+            },
+            highlights = {
+              buffer_selected = selected_style,
+              tab_selected = selected_style,
+              close_button_selected = selected_style,
+              indicator_selected = selected_style,
+              modified_selected = selected_style,
+              numbers_selected = selected_style,
+              error_selected = { bg = selected_style.bg },
+              warning_selected = { bg = selected_style.bg },
+              info_selected = { bg = selected_style.bg },
+              hint_selected = { bg = selected_style.bg },
+              diagnostic_selected = { bg = selected_style.bg },
+            },
+          }
         end,
       })
     end,
@@ -745,9 +858,7 @@ require('lazy').setup({
 
     config = function()
       require('transparent').setup {
-        groups = {
-          'Normal',
-        },
+        groups = { 'Normal' },
         extra_groups = {},
         exclude_groups = {},
         on_clear = function() end,
