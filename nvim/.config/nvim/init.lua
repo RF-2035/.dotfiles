@@ -179,8 +179,11 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.keymap.set('n', '<leader>cv', '<cmd>MarkdownPreviewToggle<CR>', { desc = 'Preview', buffer = event.buf })
 
     vim.keymap.set('n', '<leader>cm', function()
-      vim.fn.set_cmdline "for i in range(, , -1) | execute '%%s/c' . i . '::/c' . (i + 1) . '::/g' | endfor"
-      vim.fn.set_cmdline_pos(string.len 'for i in range(' + 1)
+      local cmd_string = "for i in range(, , -1) | execute '%s/c' . i . '::/c' . (i + 1) . '::/g' | endfor"
+      local cursor_pos = string.len 'for i in range('
+      vim.fn.feedkeys(':' .. cmd_string, 'i')
+      local keys_to_move_cursor = #cmd_string - cursor_pos
+      vim.fn.feedkeys(vim.api.nvim_replace_termcodes(string.rep('<Left>', keys_to_move_cursor), true, false, true))
     end, { desc = 'Move Clozes', buffer = event.buf, silent = true })
 
     vim.keymap.set('n', '<leader>cy', function()
