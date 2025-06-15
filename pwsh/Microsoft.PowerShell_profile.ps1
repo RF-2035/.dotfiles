@@ -15,13 +15,7 @@ Set-Alias lvim 'C:\Users\User\.local\bin\lvim.ps1'
 # setup clash meta proxy
 # $env:HTTP_PROXY="http://127.0.0.1:7897"; $env:HTTPS_PROXY="http://127.0.0.1:7897"
 
-# setup yazi file explorer's cd on quit function
+# nnn opens msys2 instead of file manager
 function nnn {
-    $tmp = [System.IO.Path]::GetTempFileName()
-    yazi $args --cwd-file="$tmp"
-    $cwd = Get-Content -Path $tmp -Encoding UTF8
-    if (-not [String]::IsNullOrEmpty($cwd) -and $cwd -ne $PWD.Path) {
-        Set-Location -LiteralPath ([System.IO.Path]::GetFullPath($cwd))
-    }
-    Remove-Item -Path $tmp
+    ucrt64
 }
