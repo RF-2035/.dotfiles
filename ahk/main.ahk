@@ -1,5 +1,7 @@
 #Requires AutoHotkey v2.0
 
+; use task scheduler to run with highest privileges at log on
+
 ; ┌─────────────────────┐
 ; │ PowerToys Overrides │
 ; └─────────────────────┘
