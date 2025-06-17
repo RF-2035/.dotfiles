@@ -122,6 +122,8 @@ local keys_swapped = false
 vim.keymap.set('n', '<leader>te', function()
   if keys_swapped then
     -- Remove swap mappings (restore defaults)
+    vim.keymap.del('n', '`')
+    vim.keymap.del('n', '<Esc>')
     vim.keymap.del('i', '`')
     vim.keymap.del('i', '<Esc>')
     vim.keymap.del('v', '`')
@@ -132,6 +134,8 @@ vim.keymap.set('n', '<leader>te', function()
     vim.notify('Key swap: OFF (` and Esc restored)', vim.log.levels.INFO)
   else
     -- Add swap mappings
+    vim.keymap.set('n', '`', '<Esc>', { desc = 'Escape (swapped)' })
+    vim.keymap.set('n', '<Esc>', '`', { desc = 'Backtick (swapped)' })
     vim.keymap.set('i', '`', '<Esc>', { desc = 'Escape (swapped)' })
     vim.keymap.set('i', '<Esc>', '`', { desc = 'Backtick (swapped)' })
     vim.keymap.set('v', '`', '<Esc>', { desc = 'Escape (swapped)' })
