@@ -1,0 +1,15 @@
+@import "firefox-gnome-theme/userChrome.css";
+
+#main-window[titlepreface*="🦊 "] #TabsToolbar {
+	height: 0px !important;
+	min-height: 0px !important;
+	max-height: 0px !important;
+}
+
+#main-window[titlepreface*="🦊 "] #TabsToolbar .tabbrowser-tab {
+	display: none !important;
+}
+
+#sidebar-box #sidebar-header {
+	display: none !important;
+}
