@@ -43,6 +43,10 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 vim.opt.confirm = true
 
+-- window title
+vim.opt.title = true
+vim.opt.titlestring = '%t - Nvim'
+
 -- ┌───────────┐
 -- │ Platforms │
 -- └───────────┘
