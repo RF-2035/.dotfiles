@@ -2,15 +2,25 @@
 # │ ~/.bashrc │
 # └───────────┘
 
+if [[ -n "$TERMUX_VERSION" ]]; then
+  _BIN_PATH="$PREFIX/bin"
+  _SHARE_PATH="$PREFIX/share"
+  _ETC_PATH="$PREFIX/etc"
+else
+  _BIN_PATH="/usr/bin"
+  _SHARE_PATH="/usr/share"
+  _ETC_PATH="/etc"
+fi
+
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
 
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
 
-export SHELL=/usr/bin/bash
-export EDITOR=/usr/bin/nvim
-export VISUAL=/usr/bin/nvim
+export SHELL="${_BIN_PATH}/bash"
+export EDITOR="${_BIN_PATH}/nvim"
+export VISUAL="${_BIN_PATH}/nvim"
 
 export QT_STYLE_OVERRIDE=adwaita
 
@@ -76,18 +86,18 @@ unset __conda_setup
 # │ fzf │
 # └─────┘
 
-# [[ $- == *i* ]] && source /usr/share/blesh/ble.sh
-source /usr/share/fzf/key-bindings.bash
-source /usr/share/fzf/completion.bash
+# [[ $- == *i* ]] && source "${_SHARE_PATH}/blesh/ble.sh"
+source "${_SHARE_PATH}/fzf/key-bindings.bash"
+source "${_SHARE_PATH}/fzf/completion.bash"
 
 # ┌─────────────────┐
 # │ bash-completion │
 # └─────────────────┘
 
 if ! shopt -oq posix; then
-    if [ -f /usr/share/bash-completion/bash_completion ]; then
-        . /usr/share/bash-completion/bash_completion
-    elif [ -f /etc/bash_completion ]; then
-        . /etc/bash_completion
+    if [ -f "${_SHARE_PATH}/bash-completion/bash_completion" ]; then
+        . "${_SHARE_PATH}/bash-completion/bash_completion"
+    elif [ -f "${_ETC_PATH}/bash_completion" ]; then
+        . "${_ETC_PATH}/bash_completion"
     fi
 fi
