@@ -1,5 +1,19 @@
 @import "firefox-gnome-theme/userChrome.css";
 
+/* Firefox Gnome Theme with Sidebery support
+
+in about:config
+- enable toolkit.legacyUserProfileCustomizations.stylesheets
+- enable gnomeTheme.hideSingleTab (create it if not present)
+
+in Sidebery Settings
+- enable "Add preface" and set it to "🦊 "
+
+in Settings
+- disable "Show sidebar" to make Sidebery immersive
+
+*/
+
 #main-window[titlepreface*="🦊 "] #TabsToolbar {
 	height: 0px !important;
 	min-height: 0px !important;
