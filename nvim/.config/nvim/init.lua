@@ -1,4 +1,6 @@
 --  NOTE: Modified from kickstart.nvim
+--  NOTE: pacman -S neovim git base-devel yarn nnn fzf lazygit
+--  NOTE: yay -S pandoc-bin
 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
