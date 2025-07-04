@@ -1,6 +1,16 @@
---  NOTE: Modified from kickstart.nvim
---  NOTE: pacman -S neovim git base-devel yarn nnn fzf lazygit
---  NOTE: yay -S pandoc-bin
+--  NOTE:──────────────────────────────────────────────────────────────────────┐
+--  │                                                                          │
+--  │ MODIFIED FROM KICKSTART.NVIM                                             │
+--  │                                                                          │
+--  │ install the dependencies:                                                │
+--  │   - pacman -S neovim git base-devel stow yarn nnn fzf lazygit            │
+--  │   - git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si │
+--  │   - yay -S pandoc-bin                                                    │
+--  │                                                                          │
+--  │ apply the config:                                                        │
+--  │   - git clone https://github.com/RF-2035/.dotfiles.git ~/.dotfiles       │
+--  │   - cd ~/.dotfiles && stow nvim                                          │
+--  └──────────────────────────────────────────────────────────────────────────┘
 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
