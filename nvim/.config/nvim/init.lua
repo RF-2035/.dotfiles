@@ -2,6 +2,11 @@
 --  │                                                                          │
 --  │ MODIFIED FROM KICKSTART.NVIM                                             │
 --  │                                                                          │
+--  │ enable UTF-8:                                                            │
+--  │   - nano /etc/locale.conf         # write LANG=en_US.UTF-8               │
+--  │   - nano /etc/locale.gen          # uncomment en_US.UTF-8 UTF-8          │
+--  │   - locale-gen                                                           │
+--  │                                                                          │
 --  │ install the dependencies:                                                │
 --  │   - pacman -S neovim git base-devel stow yarn nnn fzf lazygit            │
 --  │   - git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si │
