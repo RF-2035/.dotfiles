@@ -143,26 +143,14 @@ local keys_swapped = false
 vim.keymap.set('n', '<leader>te', function()
   if keys_swapped then
     -- Remove swap mappings (restore defaults)
-    vim.keymap.del('n', '`')
-    vim.keymap.del('n', '<Esc>')
-    vim.keymap.del('i', '`')
-    vim.keymap.del('i', '<Esc>')
-    vim.keymap.del('v', '`')
-    vim.keymap.del('v', '<Esc>')
-    vim.keymap.del('t', '`')
-    vim.keymap.del('t', '<Esc>')
+    vim.keymap.del({ 'n', 'i', 'v', 't', 'c' }, '`')
+    vim.keymap.del({ 'n', 'i', 'v', 't', 'c' }, '<Esc>')
     keys_swapped = false
     vim.notify('Key swap: OFF (` and Esc restored)', vim.log.levels.INFO)
   else
     -- Add swap mappings
-    vim.keymap.set('n', '`', '<Esc>', { desc = 'Escape (swapped)' })
-    vim.keymap.set('n', '<Esc>', '`', { desc = 'Backtick (swapped)' })
-    vim.keymap.set('i', '`', '<Esc>', { desc = 'Escape (swapped)' })
-    vim.keymap.set('i', '<Esc>', '`', { desc = 'Backtick (swapped)' })
-    vim.keymap.set('v', '`', '<Esc>', { desc = 'Escape (swapped)' })
-    vim.keymap.set('v', '<Esc>', '`', { desc = 'Backtick (swapped)' })
-    vim.keymap.set('t', '`', '<Esc>', { desc = 'Escape (swapped)' })
-    vim.keymap.set('t', '<Esc>', '`', { desc = 'Backtick (swapped)' })
+    vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '`', '<Esc>', { desc = 'Escape (swapped)' })
+    vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '<Esc>', '`', { desc = 'Backtick (swapped)' })
     keys_swapped = true
     vim.notify('Key swap: ON (` acts as Esc)', vim.log.levels.INFO)
   end
@@ -946,6 +934,22 @@ require('lazy').setup({
       end
     end,
   },
+
+  -- ┌─────────┐
+  -- │ Greeter │
+  -- └─────────┘
+  {
+    'mhinz/vim-startify',
+    config = function()
+      vim.g.startify_fortune_use_unicode = 1
+
+      -- NOTE: <leader>g → Greeter
+      vim.keymap.set('n', '<leader>g', function()
+        vim.cmd 'Startify'
+      end, { desc = 'Greeter', silent = true })
+    end,
+  },
+
   -- ┌───────────┐
   -- │ mini.nvim │
   -- └───────────┘
