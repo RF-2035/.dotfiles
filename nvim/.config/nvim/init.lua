@@ -26,6 +26,8 @@ vim.g.have_nerd_font = true
 -- └──────────┘
 
 vim.opt.number = true
+vim.opt.relativenumber = true
+
 vim.opt.mouse = 'a'
 vim.opt.showmode = false
 
@@ -871,7 +873,12 @@ require('lazy').setup({
           vim.api.nvim_set_hl(0, 'LspReferenceWrite', { bg = 'NONE', underline = true, force = true })
           vim.api.nvim_set_hl(0, 'LspDocumentHighlight', { bg = 'NONE', underline = true, force = true })
 
-          -- set bufferline highlight groups
+          -- use brighter cursorline in light mode
+          if vim.o.background == 'light' then
+            vim.api.nvim_set_hl(0, 'CursorLine', { bg = '#f6f5f4', force = true })
+          end
+
+          -- set bufferline highlight groups (for compability with transparent.nvim)
           local tab_sel_hl = vim.api.nvim_get_hl(0, { name = 'TabLineSel' })
           local selected_style = { fg = tab_sel_hl.fg, bg = tab_sel_hl.bg }
 
@@ -928,7 +935,7 @@ require('lazy').setup({
       else
         require('smear_cursor').setup {
           legacy_computing_symbols_support = true,
-          min_horizontal_distance_smear = 2,
+          min_horizontal_distance_smear = 3,
           min_vertical_distance_smear = 2,
         }
       end
