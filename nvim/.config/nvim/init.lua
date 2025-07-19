@@ -841,6 +841,37 @@ require('lazy').setup({
     priority = 1000,
 
     config = function()
+      -- neovide
+      if vim.g.neovide then
+        vim.o.background = 'light'
+        vim.o.title = false
+        vim.o.guifont = 'AdwaitaMono Nerd Font,Noto Sans CJK JP:h11'
+        vim.g.neovide_opacity = 0.95
+
+        -- ime handling
+        local function set_ime(args)
+          if args.event:match 'Enter$' then
+            vim.g.neovide_input_ime = true
+          else
+            vim.g.neovide_input_ime = false
+          end
+        end
+
+        local ime_input = vim.api.nvim_create_augroup('ime_input', { clear = true })
+
+        vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeave' }, {
+          group = ime_input,
+          pattern = '*',
+          callback = set_ime,
+        })
+
+        vim.api.nvim_create_autocmd({ 'CmdlineEnter', 'CmdlineLeave' }, {
+          group = ime_input,
+          pattern = '[/\\?]',
+          callback = set_ime,
+        })
+      end
+
       -- apply the colorscheme
       vim.cmd 'colorscheme adwaita'
 
@@ -898,6 +929,23 @@ require('lazy').setup({
   -- todo comments highlight
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
+  -- ┌────────────┐
+  -- │ Animations │
+  -- └────────────┘
+  {
+    'sphamba/smear-cursor.nvim',
+    config = function()
+      if vim.g.neovide then
+        require('smear_cursor').enabled = false
+      else
+        require('smear_cursor').setup {
+          legacy_computing_symbols_support = true,
+          min_horizontal_distance_smear = 2,
+          min_vertical_distance_smear = 2,
+        }
+      end
+    end,
+  },
   -- ┌───────────┐
   -- │ mini.nvim │
   -- └───────────┘
