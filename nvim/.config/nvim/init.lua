@@ -31,11 +31,6 @@ vim.opt.relativenumber = true
 vim.opt.mouse = 'a'
 vim.opt.showmode = false
 
--- Sync clipboard
-vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
-end)
-
 vim.opt.breakindent = true
 
 -- save undo history
@@ -65,6 +60,10 @@ vim.opt.confirm = true
 -- window title
 vim.opt.title = true
 vim.opt.titlestring = '%t - Nvim'
+
+-- disable shortmess find occurance count (:set shortmess+=S)
+
+vim.opt.shortmess:append 'S'
 
 -- ┌───────────┐
 -- │ Platforms │
@@ -127,7 +126,8 @@ end, { desc = 'Nnn', silent = true })
 
 -- <leader>tp → toggle clipboard sharing
 
-vim.keymap.set('n', '<leader>tp', function()
+vim.keymap.set({ 'n', 'v' }, '<leader>tp', function()
+  ---@diagnostic disable-next-line: undefined-field
   local current_clipboard = vim.opt.clipboard:get()
   if vim.tbl_contains(current_clipboard, 'unnamedplus') then
     vim.opt.clipboard = ''
@@ -142,17 +142,25 @@ end, { desc = 'Clipboard', silent = true })
 
 local keys_swapped = false
 
-vim.keymap.set('n', '<leader>te', function()
+vim.keymap.set({ 'n', 'v' }, '<leader>te', function()
   if keys_swapped then
     -- Remove swap mappings (restore defaults)
-    vim.keymap.del({ 'n', 'i', 'v', 't', 'c' }, '`')
-    vim.keymap.del({ 'n', 'i', 'v', 't', 'c' }, '<Esc>')
+    vim.keymap.del('n', '<Esc>')
+    vim.keymap.del('n', '`')
+    vim.keymap.del({ 'i', 'v', 't', 'c' }, '`')
+    vim.keymap.del({ 'i', 'v', 't', 'c' }, '<Esc>')
+    -- Restore original mappings
+    vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
     keys_swapped = false
     vim.notify('Key swap: OFF (` and Esc restored)', vim.log.levels.INFO)
   else
+    -- Remove original mappings
+    vim.keymap.del('n', '<Esc>')
     -- Add swap mappings
-    vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '`', '<Esc>', { desc = 'Escape (swapped)' })
-    vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '<Esc>', '`', { desc = 'Backtick (swapped)' })
+    vim.keymap.set('n', '<Esc>', '`', { desc = 'Backtick (swapped)' })
+    vim.keymap.set('n', '`', '<cmd>nohlsearch<CR>', { desc = 'Escape (swapped)' })
+    vim.keymap.set({ 'i', 'v', 't', 'c' }, '`', '<Esc>', { desc = 'Escape (swapped)' })
+    vim.keymap.set({ 'i', 'v', 't', 'c' }, '<Esc>', '`', { desc = 'Backtick (swapped)' })
     keys_swapped = true
     vim.notify('Key swap: ON (` acts as Esc)', vim.log.levels.INFO)
   end
@@ -275,7 +283,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-  { 'google/vim-searchindex' },
+  -- { 'google/vim-searchindex' },
   { 'github/copilot.vim' },
   { 'brianhuster/live-preview.nvim' },
   {
@@ -979,9 +987,77 @@ require('lazy').setup({
         return '%2l:%-2v'
       end
 
+      -- override section_searchcount to set maxcount to 999
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_searchcount = function(args)
+        if vim.v.hlsearch == 0 or statusline.is_truncated(args.trunc_width) then
+          return ''
+        end
+
+        -- Merge default options with maxcount = 999
+        local options = vim.tbl_extend('force', (args or {}).options or {}, {
+          recompute = true,
+          maxcount = 999,
+        })
+
+        local ok, s_count = pcall(vim.fn.searchcount, options)
+        if not ok or s_count.current == nil or s_count.total == 0 then
+          return ''
+        end
+
+        if s_count.incomplete == 1 then
+          return '?/?'
+        end
+
+        local too_many = '>' .. s_count.maxcount
+        local current = s_count.current > s_count.maxcount and too_many or s_count.current
+        local total = s_count.total > s_count.maxcount and too_many or s_count.total
+        return current .. '/' .. total
+      end
+
       -- files
-      require('mini.files').setup()
-      vim.keymap.set('n', '<leader>e', ':lua MiniFiles.open()<CR>', { desc = 'Explorer', silent = true })
+      local files = require 'mini.files'
+      files.setup()
+      vim.keymap.set('n', '<leader>e', function()
+        files.open()
+      end, { desc = 'Explorer', silent = true })
+
+      -- map
+      local minimap = require 'mini.map'
+      minimap.setup {
+        integrations = {
+          minimap.gen_integration.builtin_search(),
+          minimap.gen_integration.diff(),
+          minimap.gen_integration.diagnostic(),
+          minimap.gen_integration.gitsigns(),
+        },
+        symbols = {
+          encode = minimap.gen_encode_symbols.dot '3x2',
+        },
+        window = {
+          focusable = true,
+          side = 'right',
+        },
+      }
+
+      -- toggle minimap and focus
+      vim.keymap.set('n', '<leader>m', function()
+        minimap.toggle()
+        vim.schedule(function()
+          minimap.toggle_focus()
+        end)
+      end, { desc = 'Map', silent = true })
+
+      -- auto-close minimap when it lose focus
+      vim.api.nvim_create_autocmd('WinLeave', {
+        group = vim.api.nvim_create_augroup('MiniMapAutoClose', { clear = true }),
+        callback = function()
+          local buf_name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(vim.api.nvim_get_current_win()))
+          if buf_name:match 'minimap://' then
+            minimap.close()
+          end
+        end,
+      })
     end,
   },
 
