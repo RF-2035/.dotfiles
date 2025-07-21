@@ -843,7 +843,8 @@ require('lazy').setup({
       if vim.g.neovide then
         vim.o.background = 'light'
         vim.o.title = false
-        vim.o.guifont = 'AdwaitaMono Nerd Font,Noto Sans CJK JP:h11'
+        -- using adwaita mono as braille fallback (for mini.map)
+        vim.o.guifont = 'FiraCode Nerd Font Mono,Adwaita Mono,Noto Sans CJK JP:h11'
         vim.g.neovide_opacity = 0.95
 
         -- ime handling
@@ -1032,7 +1033,7 @@ require('lazy').setup({
           minimap.gen_integration.gitsigns(),
         },
         symbols = {
-          encode = minimap.gen_encode_symbols.dot '3x2',
+          encode = minimap.gen_encode_symbols.dot '4x2',
         },
         window = {
           focusable = true,
