@@ -853,7 +853,7 @@ require('lazy').setup({
         -- add frame = "none" to ~/.config/neovide/config.toml to remove the window frame
         vim.o.titlestring = '%t - Neovide'
         -- using adwaita mono as braille fallback (for mini.map)
-        if vim.fn.has 'win32' then
+        if vim.fn.has 'win32' == 1 then
           vim.o.guifont = 'FiraCode Nerd Font,Noto Sans JP:h11'
         else
           vim.o.guifont = 'FiraCode Nerd Font Mono,Adwaita Mono,Noto Sans CJK JP:h11'
