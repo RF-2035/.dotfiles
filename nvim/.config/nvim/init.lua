@@ -284,7 +284,15 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   -- { 'google/vim-searchindex' },
-  { 'github/copilot.vim' },
+  {
+    'github/copilot.vim',
+    config = function()
+      -- NOTE: <leader>cc → copilot panel
+      vim.keymap.set('n', '<leader>cc', function()
+        vim.cmd 'Copilot panel'
+      end, { desc = 'Completions', silent = true })
+    end,
+  },
   { 'brianhuster/live-preview.nvim' },
   {
     -- NOTE: <leader>tv → markdown preview toggle
@@ -842,10 +850,16 @@ require('lazy').setup({
       -- neovide
       if vim.g.neovide then
         vim.o.background = 'light'
-        vim.o.title = false
+        -- add frame = "none" to ~/.config/neovide/config.toml to remove the window frame
+        vim.o.titlestring = '%t - Neovide'
         -- using adwaita mono as braille fallback (for mini.map)
-        vim.o.guifont = 'FiraCode Nerd Font Mono,Adwaita Mono,Noto Sans CJK JP:h11'
-        vim.g.neovide_opacity = 0.95
+        if vim.fn.has 'win32' then
+          vim.o.guifont = 'FiraCode Nerd Font,Noto Sans JP:h11'
+        else
+          vim.o.guifont = 'FiraCode Nerd Font Mono,Adwaita Mono,Noto Sans CJK JP:h11'
+        end
+        vim.g.neovide_opacity = 0.9
+        vim.g.neovide_cursor_short_animation_length = 0.04
 
         -- ime handling
         local function set_ime(args)
