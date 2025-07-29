@@ -849,7 +849,7 @@ require('lazy').setup({
     config = function()
       -- neovide
       if vim.g.neovide then
-        vim.o.background = 'light'
+        vim.o.background = 'dark'
         -- add frame = "none" to ~/.config/neovide/config.toml to remove the window frame
         vim.o.titlestring = '%t - Neovide'
         -- using adwaita mono as braille fallback (for mini.map)
@@ -858,7 +858,7 @@ require('lazy').setup({
         else
           vim.o.guifont = 'FiraCode Nerd Font Mono,Adwaita Mono,Noto Sans CJK JP:h11'
         end
-        vim.g.neovide_opacity = 0.9
+        vim.g.neovide_opacity = 0.8
         vim.g.neovide_cursor_short_animation_length = 0.04
 
         -- ime handling

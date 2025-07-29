@@ -3,13 +3,13 @@
 # └───────────┘
 
 if [[ -n "$TERMUX_VERSION" ]]; then
-  _BIN_PATH="$PREFIX/bin"
-  _SHARE_PATH="$PREFIX/share"
-  _ETC_PATH="$PREFIX/etc"
+    _BIN_PATH="$PREFIX/bin"
+    _SHARE_PATH="$PREFIX/share"
+    _ETC_PATH="$PREFIX/etc"
 else
-  _BIN_PATH="/usr/bin"
-  _SHARE_PATH="/usr/share"
-  _ETC_PATH="/etc"
+    _BIN_PATH="/usr/bin"
+    _SHARE_PATH="/usr/share"
+    _ETC_PATH="/etc"
 fi
 
 export GTK_IM_MODULE=fcitx
@@ -22,11 +22,11 @@ export SHELL="${_BIN_PATH}/bash"
 export EDITOR="${_BIN_PATH}/nvim"
 export VISUAL="${_BIN_PATH}/nvim"
 
-export QT_STYLE_OVERRIDE=adwaita
+export QT_STYLE_OVERRIDE=kvantum
 
 if [ "$XDG_SESSION_TYPE" = 'wayland' ]; then
     export QT_QPA_PLATFORM=wayland
-    export QT_WAYLAND_DECORATION=adwaita
+    export QT_WAYLAND_DECORATION=kvantum
 fi
 
 # If not running interactively, don't do anything
