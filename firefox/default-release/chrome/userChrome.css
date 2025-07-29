@@ -1,10 +1,11 @@
-@import "firefox-gnome-theme/userChrome.css";
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* Firefox Gnome Theme with Sidebery support
+/* Firefox Elementary Theme with Sidebery support
 
 in about:config
 - enable toolkit.legacyUserProfileCustomizations.stylesheets
-- enable gnomeTheme.hideSingleTab (create it if not present)
 
 in Sidebery Settings
 - enable "Add preface" and set it to "🦊 "
@@ -12,18 +13,54 @@ in Sidebery Settings
 in Settings
 - disable "Show sidebar" to make Sidebery immersive
 
+in Add-ons
+- use "Elemental - Soft" theme for a better look
+
 */
 
+@import "base.css";
+@import "flatpak.css";
+
+/* brings window controls in the nav bar
+.titlebar-buttonbox {
+    appearance: none !important;
+    flex-direction: row !important;
+    margin-left: 3px !important;
+    top: 9px !important;
+    position: absolute !important;
+    display: flex !important;
+    width: calc(100vw - 6px) !important;
+    height: 25px !important;
+    justify-content: space-between !important;
+} */
+
+/* dont show window controls in fullscreen
+:root[sizemode="fullscreen"] .titlebar-buttonbox {
+    display: none !important;
+} */
+
+/* makes room for window control buttons
+#nav-bar {
+    padding: 0px 41px 0px 45px !important;
+} */
+
 #main-window[titlepreface*="🦊 "] #TabsToolbar {
-	height: 0px !important;
-	min-height: 0px !important;
-	max-height: 0px !important;
+    height: 0px !important;
+    min-height: 0px !important;
+    max-height: 0px !important;
 }
 
 #main-window[titlepreface*="🦊 "] #TabsToolbar .tabbrowser-tab {
-	display: none !important;
+    display: none !important;
 }
 
 #sidebar-box #sidebar-header {
-	display: none !important;
+    display: none !important;
+}
+
+#sidebar-splitter {
+    width: 1px !important;
+    min-width: 1px !important;
+    background-color: #CECECE !important;
+    border: none !important;
 }
