@@ -1,66 +1,57 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+@import "firefox-gnome-theme/userChrome.css";
 
-/* Firefox Elementary Theme with Sidebery support
+/* Firefox Gnome Theme with Sidebery support
 
 in about:config
+
 - enable toolkit.legacyUserProfileCustomizations.stylesheets
+- enable gnomeTheme.hideSingleTab (create it if not present)
 
 in Sidebery Settings
-- enable "Add preface" and set it to "🦊 "
+
+- enable "Add preface" and set it to "◌ "
+- add the following stylesheet:
+
+```
+#root.root {--general-border-radius: 8px;}
+#root.root {--bottom-bar-height: 34px;}
+#root.root {--general-margin: 0px;}
+#root.root {--bookmarks-bookmark-height: 34px;}
+#root.root {--bookmarks-folder-height: 34px;}
+#root.root {--bookmarks-margin: 6px;}
+#root.root {--tabs-margin: 6px;}
+#root.root {--tabs-pinned-height: 34px;}
+#root.root {--tabs-pinned-width: 34px;}
+#root.root {--tabs-height: 34px;}
+#root.root {--nav-btn-margin: 6px;}
+#root.root {--nav-btn-active-shadow: none;}
+#root.root {--nav-btn-width: 34px;}
+#root.root {--nav-btn-height: 34px;}
+#root.root {--tabs-activated-shadow: none;}
+#root.root {--bookmarks-expanded-folder-shadow: none;}
+```
 
 in Settings
-- disable "Show sidebar" to make Sidebery immersive
 
-in Add-ons
-- use "Elemental - Soft" theme for a better look
+- disable "Show sidebar" to make Sidebery immersive
 
 */
 
-@import "base.css";
-@import "flatpak.css";
-
-/* brings window controls in the nav bar
-.titlebar-buttonbox {
-    appearance: none !important;
-    flex-direction: row !important;
-    margin-left: 3px !important;
-    top: 9px !important;
-    position: absolute !important;
-    display: flex !important;
-    width: calc(100vw - 6px) !important;
-    height: 25px !important;
-    justify-content: space-between !important;
-} */
-
-/* dont show window controls in fullscreen
-:root[sizemode="fullscreen"] .titlebar-buttonbox {
-    display: none !important;
-} */
-
-/* makes room for window control buttons
-#nav-bar {
-    padding: 0px 41px 0px 45px !important;
-} */
-
 #main-window[titlepreface*="◌ "] #TabsToolbar {
-    height: 0px !important;
-    min-height: 0px !important;
-    max-height: 0px !important;
+	height: 0px !important;
+	min-height: 0px !important;
+	max-height: 0px !important;
 }
 
 #main-window[titlepreface*="◌ "] #TabsToolbar .tabbrowser-tab {
-    display: none !important;
+	display: none !important;
 }
 
 #main-window[titlepreface*="◌ "] #sidebar-box #sidebar-header {
-    display: none !important;
+	display: none !important;
 }
 
 #sidebar-splitter {
-    width: 1px !important;
-    min-width: 1px !important;
-    background-color: #CECECE !important;
-    border: none !important;
+	width: 1px !important;
+	min-width: 1px !important;
 }
