@@ -333,7 +333,8 @@ require('lazy').setup({
         },
       }
 
-      require('bufferline').setup {
+      local bufferline = require 'bufferline'
+      bufferline.setup {
         options = {
           always_show_bufferline = false,
           auto_toggle_bufferline = true,
@@ -842,14 +843,15 @@ require('lazy').setup({
   -- │ Appearence │
   -- └────────────┘
   {
-    'Mofiqul/adwaita.nvim',
+    -- 'Mofiqul/adwaita.nvim',
+    'iissnan/tangoX',
     lazy = false,
     priority = 1000,
 
     config = function()
       -- neovide
       if vim.g.neovide then
-        vim.o.background = 'dark'
+        vim.o.background = 'light'
         -- add frame = "none" to ~/.config/neovide/config.toml to remove the window frame
         vim.o.titlestring = '%t - Neovide'
         -- using adwaita mono as braille fallback (for mini.map)
@@ -858,7 +860,8 @@ require('lazy').setup({
         else
           vim.o.guifont = 'FiraCode Nerd Font Mono,Adwaita Mono,Noto Sans CJK JP:h11'
         end
-        vim.g.neovide_opacity = 0.8
+        vim.g.neovide_opacity = 0.9
+        vim.g.neovide_padding_top = 12
         vim.g.neovide_cursor_short_animation_length = 0.04
 
         -- ime handling
@@ -886,7 +889,7 @@ require('lazy').setup({
       end
 
       -- apply the colorscheme
-      vim.cmd 'colorscheme adwaita'
+      vim.cmd 'colorscheme tangoX'
 
       vim.api.nvim_create_autocmd({ 'ColorScheme', 'LspAttach' }, {
         callback = function()
@@ -897,33 +900,33 @@ require('lazy').setup({
           vim.api.nvim_set_hl(0, 'LspDocumentHighlight', { bg = 'NONE', underline = true, force = true })
 
           -- use brighter cursorline in light mode
-          if vim.o.background == 'light' then
-            vim.api.nvim_set_hl(0, 'CursorLine', { bg = '#f6f5f4', force = true })
-          end
+          -- if vim.o.background == 'light' then
+          --   vim.api.nvim_set_hl(0, 'CursorLine', { bg = '#f6f5f4', force = true })
+          -- end
 
           -- set bufferline highlight groups (for compability with transparent.nvim)
-          local tab_sel_hl = vim.api.nvim_get_hl(0, { name = 'TabLineSel' })
-          local selected_style = { fg = tab_sel_hl.fg, bg = tab_sel_hl.bg }
+          -- local tab_sel_hl = vim.api.nvim_get_hl(0, { name = 'TabLineSel' })
+          -- local selected_style = { fg = tab_sel_hl.fg, bg = tab_sel_hl.bg }
 
-          require('bufferline').setup {
-            options = {
-              always_show_bufferline = false,
-              auto_toggle_bufferline = true,
-            },
-            highlights = {
-              buffer_selected = selected_style,
-              tab_selected = selected_style,
-              close_button_selected = selected_style,
-              indicator_selected = selected_style,
-              modified_selected = selected_style,
-              numbers_selected = selected_style,
-              error_selected = { bg = selected_style.bg },
-              warning_selected = { bg = selected_style.bg },
-              info_selected = { bg = selected_style.bg },
-              hint_selected = { bg = selected_style.bg },
-              diagnostic_selected = { bg = selected_style.bg },
-            },
-          }
+          -- require('bufferline').setup {
+          --   options = {
+          --     always_show_bufferline = false,
+          --     auto_toggle_bufferline = true,
+          --   },
+          --   highlights = {
+          --     buffer_selected = selected_style,
+          --     tab_selected = selected_style,
+          --     close_button_selected = selected_style,
+          --     indicator_selected = selected_style,
+          --     modified_selected = selected_style,
+          --     numbers_selected = selected_style,
+          --     error_selected = { bg = selected_style.bg },
+          --     warning_selected = { bg = selected_style.bg },
+          --     info_selected = { bg = selected_style.bg },
+          --     hint_selected = { bg = selected_style.bg },
+          --     diagnostic_selected = { bg = selected_style.bg },
+          --   },
+          -- }
         end,
       })
     end,
