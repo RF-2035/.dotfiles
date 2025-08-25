@@ -44,17 +44,17 @@ in Add-ons
     padding: 0px 41px 0px 45px !important;
 } */
 
-#main-window[titlepreface*="🦊 "] #TabsToolbar {
+#main-window[titlepreface*="◌ "] #TabsToolbar {
     height: 0px !important;
     min-height: 0px !important;
     max-height: 0px !important;
 }
 
-#main-window[titlepreface*="🦊 "] #TabsToolbar .tabbrowser-tab {
+#main-window[titlepreface*="◌ "] #TabsToolbar .tabbrowser-tab {
     display: none !important;
 }
 
-#sidebar-box #sidebar-header {
+#main-window[titlepreface*="◌ "] #sidebar-box #sidebar-header {
     display: none !important;
 }
 
