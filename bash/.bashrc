@@ -86,9 +86,7 @@ unset __conda_setup
 # │ fzf │
 # └─────┘
 
-# [[ $- == *i* ]] && source "${_SHARE_PATH}/blesh/ble.sh"
-source "${_SHARE_PATH}/fzf/key-bindings.bash"
-source "${_SHARE_PATH}/fzf/completion.bash"
+eval "$(fzf --bash)"
 
 # ┌─────────────────┐
 # │ bash-completion │
