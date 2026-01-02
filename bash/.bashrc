@@ -29,6 +29,8 @@ if [ "$XDG_SESSION_TYPE" = 'wayland' ]; then
     export QT_WAYLAND_DECORATION=kvantum
 fi
 
+export PATH="~/.local/bin:$PATH"
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
