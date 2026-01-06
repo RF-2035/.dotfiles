@@ -860,36 +860,54 @@ require('lazy').setup({
         else
           vim.o.guifont = 'FiraCode Nerd Font Mono,Adwaita Mono,Noto Sans CJK JP:h11'
         end
-        -- vim.g.neovide_opacity = 0.9
+        vim.g.neovide_opacity = 0.9
         -- vim.g.neovide_padding_top = 12
         vim.g.neovide_cursor_short_animation_length = 0.04
 
         -- ime handling
-        local function set_ime(args)
-          if args.event:match 'Enter$' then
-            vim.g.neovide_input_ime = true
-          else
-            vim.g.neovide_input_ime = false
-          end
-        end
+        -- local function set_ime(args)
+        --   if args.event:match 'Enter$' then
+        --     vim.g.neovide_input_ime = true
+        --   else
+        --     vim.g.neovide_input_ime = false
+        --   end
+        -- end
 
-        local ime_input = vim.api.nvim_create_augroup('ime_input', { clear = true })
+        -- local ime_input = vim.api.nvim_create_augroup('ime_input', { clear = true })
 
-        vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeave' }, {
-          group = ime_input,
-          pattern = '*',
-          callback = set_ime,
-        })
+        -- vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeave' }, {
+        --   group = ime_input,
+        --   pattern = '*',
+        --   callback = set_ime,
+        -- })
 
-        vim.api.nvim_create_autocmd({ 'CmdlineEnter', 'CmdlineLeave' }, {
-          group = ime_input,
-          pattern = '[/\\?]',
-          callback = set_ime,
-        })
+        -- vim.api.nvim_create_autocmd({ 'CmdlineEnter', 'CmdlineLeave' }, {
+        --   group = ime_input,
+        --   pattern = '[/\\?]',
+        --   callback = set_ime,
+        -- })
       end
 
       -- apply the colorscheme
       vim.cmd 'colorscheme tangoX'
+
+      -- set terminal colors (tango light)
+      vim.g.terminal_color_0 = '#eeeeec'
+      vim.g.terminal_color_1 = '#ef2929'
+      vim.g.terminal_color_2 = '#8ae234'
+      vim.g.terminal_color_3 = '#fce94f'
+      vim.g.terminal_color_4 = '#729fcf'
+      vim.g.terminal_color_5 = '#ad7fa8'
+      vim.g.terminal_color_6 = '#34e2e2'
+      vim.g.terminal_color_7 = '#555753'
+      vim.g.terminal_color_8 = '#d3d7cf'
+      vim.g.terminal_color_9 = '#cc0000'
+      vim.g.terminal_color_10 = '#4e9a06'
+      vim.g.terminal_color_11 = '#c4a000'
+      vim.g.terminal_color_12 = '#3465a4'
+      vim.g.terminal_color_13 = '#75507b'
+      vim.g.terminal_color_14 = '#06989a'
+      vim.g.terminal_color_15 = '#2e3436'
 
       vim.api.nvim_create_autocmd({ 'ColorScheme', 'LspAttach' }, {
         callback = function()
