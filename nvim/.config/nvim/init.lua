@@ -94,6 +94,20 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- NOTE: CTRL+<LeftMouse> → move cursor to clicked position and run gx
+
+vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '<C-LeftMouse>', function()
+  local mouse_pos = vim.fn.getmousepos()
+  vim.api.nvim_win_set_cursor(0, { mouse_pos.line, mouse_pos.column - 1 })
+  vim.ui.open(vim.fn.expand '<cfile>')
+end, { desc = 'Go to file under cursor (Ctrl + Left Mouse)' })
+
+-- NOTE: SHIFT+<Insert> → paste from clipboard
+
+vim.keymap.set({ 'n', 'v' }, '<S-Insert>', '"+p', { desc = 'Paste from clipboard' })
+vim.keymap.set({ 'i', 'c' }, '<S-Insert>', '<C-R>+', { desc = 'Paste from clipboard' })
+vim.keymap.set('t', '<S-Insert>', '<C-\\><C-N>"+p', { desc = 'Paste from clipboard' })
+
 -- NOTE: <leader>t → toggle
 
 vim.api.nvim_create_autocmd('TermClose', {
@@ -145,10 +159,8 @@ local keys_swapped = false
 vim.keymap.set({ 'n', 'v' }, '<leader>te', function()
   if keys_swapped then
     -- Remove swap mappings (restore defaults)
-    vim.keymap.del('n', '<Esc>')
-    vim.keymap.del('n', '`')
-    vim.keymap.del({ 'i', 'v', 't', 'c' }, '`')
-    vim.keymap.del({ 'i', 'v', 't', 'c' }, '<Esc>')
+    vim.keymap.del({ 'n', 'i', 'v', 't', 'c' }, '`')
+    vim.keymap.del({ 'n', 'i', 'v', 't', 'c' }, '<Esc>')
     -- Restore original mappings
     vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
     keys_swapped = false
@@ -284,6 +296,10 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   -- { 'google/vim-searchindex' },
+
+  -- ┌─────────┐
+  -- │ Copilot │
+  -- └─────────┘
   {
     'github/copilot.vim',
     config = function()
@@ -293,6 +309,10 @@ require('lazy').setup({
       end, { desc = 'Completions', silent = true })
     end,
   },
+
+  -- ┌─────────────────────────┐
+  -- │ HTML & Markdown Preview │
+  -- └─────────────────────────┘
   { 'brianhuster/live-preview.nvim' },
   {
     -- NOTE: <leader>tv → markdown preview toggle
@@ -318,6 +338,70 @@ require('lazy').setup({
     end,
     ft = { 'markdown' },
   },
+
+  -- ┌──────────┐
+  -- │ Explorer │
+  -- └──────────┘
+  {
+    'nvim-tree/nvim-tree.lua',
+    config = function()
+      local nvim_tree = require 'nvim-tree'
+      nvim_tree.setup {
+        hijack_cursor = true,
+        disable_netrw = true,
+        sync_root_with_cwd = true,
+        -- view = {
+        --   float = {
+        --     enable = true,
+        --   },
+        -- },
+        renderer = {
+          icons = {
+            glyphs = {
+              git = {
+                unstaged = '',
+                staged = '',
+                unmerged = '',
+                renamed = '',
+                untracked = '',
+                deleted = '',
+                ignored = '',
+              },
+            },
+          },
+        },
+        actions = {
+          change_dir = {
+            global = true,
+          },
+        },
+        trash = {
+          cmd = 'trash-put',
+        },
+      }
+
+      -- NOTE: <leader>e → Explorer
+      vim.keymap.set('n', '<leader>e', function()
+        require('nvim-tree.api').tree.open()
+      end, { desc = 'nvim-tree: Open', silent = true })
+
+      -- NOTE: h → collapse, l → preview, n → new, <leader>e → close
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'NvimTree',
+        callback = function()
+          local api = require 'nvim-tree.api'
+          vim.keymap.set('n', 'h', api.node.navigate.parent_close, { buffer = true, desc = 'Collapse' })
+          vim.keymap.set('n', 'l', api.node.open.preview, { buffer = true, desc = 'Preview' })
+          vim.keymap.set('n', 'n', api.fs.create, { buffer = true, desc = 'Create File Or Directory' })
+          vim.keymap.set('n', '<leader>e', api.tree.close, { buffer = true, desc = 'Close' })
+        end,
+      })
+    end,
+  },
+
+  -- ┌─────────┐
+  -- │ Tab Bar │
+  -- └─────────┘
   {
     -- NOTE: <leader>b → buffer
     'akinsho/bufferline.nvim',
@@ -338,6 +422,15 @@ require('lazy').setup({
         options = {
           always_show_bufferline = false,
           auto_toggle_bufferline = true,
+          style_preset = bufferline.style_preset.no_italic,
+          offsets = {
+            {
+              filetype = 'NvimTree',
+              text = 'Explorer',
+              highlight = 'BufferlineTab',
+              separator = true, -- use a "true" to enable the default, or set your own character
+            },
+          },
         },
       }
 
@@ -379,6 +472,39 @@ require('lazy').setup({
     end,
   },
 
+  -- ┌────────────┐
+  -- │ Status Bar │
+  -- └────────────┘
+  {
+    'nvim-lualine/lualine.nvim',
+    requires = { 'nvim-tree/nvim-web-devicons', opt = true },
+    config = function()
+      local nvim_tree = {
+        sections = {
+          lualine_a = {
+            function()
+              return vim.fn.fnamemodify(vim.fn.getcwd(), ':~:t')
+            end,
+          },
+        },
+        filetypes = { 'NvimTree' },
+      }
+      require('lualine').setup {
+        options = {
+          section_separators = { left = '', right = '' },
+          component_separators = { left = '', right = '' },
+        },
+        sections = {
+          lualine_x = { 'encoding', 'fileformat', 'filetype', 'searchcount' },
+        },
+        extensions = { nvim_tree },
+      }
+    end,
+  },
+
+  -- ┌───────────┐
+  -- │ Git Signs │
+  -- └───────────┘
   {
     'lewis6991/gitsigns.nvim',
     opts = {
@@ -392,6 +518,9 @@ require('lazy').setup({
     },
   },
 
+  -- ┌───────────┐
+  -- │ Key Hints │
+  -- └───────────┘
   {
     'folke/which-key.nvim',
     event = 'VimEnter',
@@ -444,6 +573,9 @@ require('lazy').setup({
     },
   },
 
+  -- ┌────────┐
+  -- │ Search │
+  -- └────────┘
   {
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -505,7 +637,9 @@ require('lazy').setup({
     end,
   },
 
-  -- LSP Plugins
+  -- ┌────────────┐
+  -- │ LSP Config │
+  -- └────────────┘
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
@@ -595,6 +729,7 @@ require('lazy').setup({
             if vim.fn.has 'nvim-0.11' == 1 then
               return client:supports_method(method, bufnr)
             else
+              ---@diagnostic disable-next-line: param-type-mismatch
               return client.supports_method(method, { bufnr = bufnr })
             end
           end
@@ -689,6 +824,7 @@ require('lazy').setup({
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+      ---@diagnostic disable-next-line: missing-fields
       require('mason-lspconfig').setup {
         ensure_installed = {},
         automatic_installation = false,
@@ -703,6 +839,9 @@ require('lazy').setup({
     end,
   },
 
+  -- ┌────────────────┐
+  -- │ LSP Autoformat │
+  -- └────────────────┘
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -740,6 +879,9 @@ require('lazy').setup({
     },
   },
 
+  -- ┌────────────────────┐
+  -- │ LSP Autocompletion │
+  -- └────────────────────┘
   { -- Autocompletion
     'saghen/blink.cmp',
     event = 'VimEnter',
@@ -840,11 +982,10 @@ require('lazy').setup({
   },
 
   -- ┌────────────┐
-  -- │ Appearence │
+  -- │ Appearance │
   -- └────────────┘
   {
-    -- 'Mofiqul/adwaita.nvim',
-    'iissnan/tangoX',
+    'Mofiqul/adwaita.nvim',
     lazy = false,
     priority = 1000,
 
@@ -863,51 +1004,10 @@ require('lazy').setup({
         vim.g.neovide_opacity = 0.9
         -- vim.g.neovide_padding_top = 12
         vim.g.neovide_cursor_short_animation_length = 0.04
-
-        -- ime handling
-        -- local function set_ime(args)
-        --   if args.event:match 'Enter$' then
-        --     vim.g.neovide_input_ime = true
-        --   else
-        --     vim.g.neovide_input_ime = false
-        --   end
-        -- end
-
-        -- local ime_input = vim.api.nvim_create_augroup('ime_input', { clear = true })
-
-        -- vim.api.nvim_create_autocmd({ 'InsertEnter', 'InsertLeave' }, {
-        --   group = ime_input,
-        --   pattern = '*',
-        --   callback = set_ime,
-        -- })
-
-        -- vim.api.nvim_create_autocmd({ 'CmdlineEnter', 'CmdlineLeave' }, {
-        --   group = ime_input,
-        --   pattern = '[/\\?]',
-        --   callback = set_ime,
-        -- })
       end
 
       -- apply the colorscheme
-      vim.cmd 'colorscheme tangoX'
-
-      -- set terminal colors (tango light)
-      vim.g.terminal_color_0 = '#eeeeec'
-      vim.g.terminal_color_1 = '#ef2929'
-      vim.g.terminal_color_2 = '#8ae234'
-      vim.g.terminal_color_3 = '#fce94f'
-      vim.g.terminal_color_4 = '#729fcf'
-      vim.g.terminal_color_5 = '#ad7fa8'
-      vim.g.terminal_color_6 = '#34e2e2'
-      vim.g.terminal_color_7 = '#555753'
-      vim.g.terminal_color_8 = '#d3d7cf'
-      vim.g.terminal_color_9 = '#cc0000'
-      vim.g.terminal_color_10 = '#4e9a06'
-      vim.g.terminal_color_11 = '#c4a000'
-      vim.g.terminal_color_12 = '#3465a4'
-      vim.g.terminal_color_13 = '#75507b'
-      vim.g.terminal_color_14 = '#06989a'
-      vim.g.terminal_color_15 = '#2e3436'
+      vim.cmd 'colorscheme adwaita'
 
       vim.api.nvim_create_autocmd({ 'ColorScheme', 'LspAttach' }, {
         callback = function()
@@ -916,35 +1016,6 @@ require('lazy').setup({
           vim.api.nvim_set_hl(0, 'LspReferenceRead', { bg = 'NONE', underline = true, force = true })
           vim.api.nvim_set_hl(0, 'LspReferenceWrite', { bg = 'NONE', underline = true, force = true })
           vim.api.nvim_set_hl(0, 'LspDocumentHighlight', { bg = 'NONE', underline = true, force = true })
-
-          -- use brighter cursorline in light mode
-          -- if vim.o.background == 'light' then
-          --   vim.api.nvim_set_hl(0, 'CursorLine', { bg = '#f6f5f4', force = true })
-          -- end
-
-          -- set bufferline highlight groups (for compability with transparent.nvim)
-          -- local tab_sel_hl = vim.api.nvim_get_hl(0, { name = 'TabLineSel' })
-          -- local selected_style = { fg = tab_sel_hl.fg, bg = tab_sel_hl.bg }
-
-          -- require('bufferline').setup {
-          --   options = {
-          --     always_show_bufferline = false,
-          --     auto_toggle_bufferline = true,
-          --   },
-          --   highlights = {
-          --     buffer_selected = selected_style,
-          --     tab_selected = selected_style,
-          --     close_button_selected = selected_style,
-          --     indicator_selected = selected_style,
-          --     modified_selected = selected_style,
-          --     numbers_selected = selected_style,
-          --     error_selected = { bg = selected_style.bg },
-          --     warning_selected = { bg = selected_style.bg },
-          --     info_selected = { bg = selected_style.bg },
-          --     hint_selected = { bg = selected_style.bg },
-          --     diagnostic_selected = { bg = selected_style.bg },
-          --   },
-          -- }
         end,
       })
     end,
@@ -998,6 +1069,22 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>g', function()
         vim.cmd 'Startify'
       end, { desc = 'Greeter', silent = true })
+
+      -- NOTE: in Greeter, o → Open Session, w → Write Session, d → Delete Session
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'startify',
+        callback = function()
+          vim.keymap.set('n', 'o', function()
+            vim.cmd 'SLoad'
+          end, { buffer = true, desc = 'Open Session', silent = true })
+          vim.keymap.set('n', 'w', function()
+            vim.cmd 'SSave'
+          end, { buffer = true, desc = 'Write Session', silent = true })
+          vim.keymap.set('n', 'd', function()
+            vim.cmd 'SDelete'
+          end, { buffer = true, desc = 'Delete Session', silent = true })
+        end,
+      })
     end,
   },
 
@@ -1012,51 +1099,6 @@ require('lazy').setup({
 
       -- surround
       require('mini.surround').setup()
-
-      -- statusline
-      local statusline = require 'mini.statusline'
-      statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- statusline set cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
-
-      -- override section_searchcount to set maxcount to 999
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_searchcount = function(args)
-        if vim.v.hlsearch == 0 or statusline.is_truncated(args.trunc_width) then
-          return ''
-        end
-
-        -- Merge default options with maxcount = 999
-        local options = vim.tbl_extend('force', (args or {}).options or {}, {
-          recompute = true,
-          maxcount = 999,
-        })
-
-        local ok, s_count = pcall(vim.fn.searchcount, options)
-        if not ok or s_count.current == nil or s_count.total == 0 then
-          return ''
-        end
-
-        if s_count.incomplete == 1 then
-          return '?/?'
-        end
-
-        local too_many = '>' .. s_count.maxcount
-        local current = s_count.current > s_count.maxcount and too_many or s_count.current
-        local total = s_count.total > s_count.maxcount and too_many or s_count.total
-        return current .. '/' .. total
-      end
-
-      -- files
-      local files = require 'mini.files'
-      files.setup()
-      vim.keymap.set('n', '<leader>e', function()
-        files.open()
-      end, { desc = 'Explorer', silent = true })
 
       -- map
       local minimap = require 'mini.map'
@@ -1076,7 +1118,7 @@ require('lazy').setup({
         },
       }
 
-      -- toggle minimap and focus
+      -- NOTE: <leader>m → minimap
       vim.keymap.set('n', '<leader>m', function()
         minimap.toggle()
         vim.schedule(function()
@@ -1084,7 +1126,15 @@ require('lazy').setup({
         end)
       end, { desc = 'Map', silent = true })
 
-      -- auto-close minimap when it lose focus
+      -- NOTE: in minimap, q or focus loss → close minimap
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'minimap',
+        callback = function()
+          vim.keymap.set('n', 'q', function()
+            minimap.close()
+          end, { buffer = true, desc = 'Close', silent = true })
+        end,
+      })
       vim.api.nvim_create_autocmd('WinLeave', {
         group = vim.api.nvim_create_augroup('MiniMapAutoClose', { clear = true }),
         callback = function()
@@ -1152,6 +1202,7 @@ require('lazy').setup({
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
   -- you can continue same window with `<space>sr` which resumes last telescope search
+  ---@diagnostic disable-next-line: missing-fields
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
