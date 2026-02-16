@@ -12,6 +12,14 @@ else
     _ETC_PATH="/etc"
 fi
 
+if [ "$EUID" -eq 0 ] && [[ -z "$TERMUX_VERSION" ]]; then
+    _HOME_PATH="/home/$(logname)"
+else
+    _HOME_PATH="$HOME"
+fi
+
+export PATH="${_HOME_PATH}/.local/bin:$PATH"
+
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
@@ -31,8 +39,6 @@ if [ "$XDG_SESSION_TYPE" = 'wayland' ]; then
     export QT_WAYLAND_DECORATION=adwaita
 fi
 
-export PATH="~/.local/bin:$PATH"
-
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -42,6 +48,7 @@ export PATH="~/.local/bin:$PATH"
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
+alias diff='diff --color=auto'
 # PS1='[\u@\h \W]\$ '
 # PS1='\[\e[32;1m\]\u@\h: \[\e[36m\]\W\[\e[0m\]\$ '
 PS1='\[\e[38;2;46;194;126;1m\]\u@\h: \[\e[38;2;10;185;220;1m\]\W\[\e[0m\]\$ '
