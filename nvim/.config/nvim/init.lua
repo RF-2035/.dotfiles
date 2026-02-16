@@ -8,7 +8,7 @@
 --  │   - locale-gen                                                           │
 --  │                                                                          │
 --  │ install the dependencies:                                                │
---  │   - pacman -S neovim git base-devel stow yarn nnn fzf lazygit            │
+--  │   - pacman -S neovim git base-devel stow yarn nnn fzf lazygit gemini-cli │
 --  │   - git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si │
 --  │   - yay -S pandoc-bin                                                    │
 --  │                                                                          │
@@ -31,6 +31,7 @@ vim.opt.relativenumber = true
 vim.opt.mouse = 'a'
 vim.opt.showmode = false
 
+vim.opt.tabstop = 4
 vim.opt.breakindent = true
 
 -- save undo history
@@ -62,7 +63,6 @@ vim.opt.title = true
 vim.opt.titlestring = '%t - Nvim'
 
 -- disable shortmess find occurance count (:set shortmess+=S)
-
 vim.opt.shortmess:append 'S'
 
 -- ┌───────────┐
@@ -137,6 +137,12 @@ vim.keymap.set('n', '<leader>tn', function()
   vim.cmd 'file nnn'
   vim.cmd 'startinsert'
 end, { desc = 'Nnn', silent = true })
+
+vim.keymap.set('n', '<leader>ta', function()
+  vim.cmd 'terminal gemini'
+  vim.cmd 'file Gemini'
+  vim.cmd 'startinsert'
+end, { desc = 'Gemini', silent = true })
 
 -- <leader>tp → toggle clipboard sharing
 
@@ -297,6 +303,23 @@ require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   -- { 'google/vim-searchindex' },
 
+  -- ┌───────┐
+  -- │ Icons │
+  -- └───────┘
+  {
+    'nvim-tree/nvim-web-devicons',
+    config = function()
+      vim.opt.termguicolors = true
+      require('nvim-web-devicons').setup {
+        override = {
+          nnn = { icon = '', color = '#00AFFF', cterm_color = '39', name = 'Nnn' },
+          lazygit = { icon = '', color = '#B83A1D', cterm_color = '160', name = 'LazyGit' },
+          gemini = { icon = '✦', color = '#4285F4', cterm_color = '33', name = 'Gemini' },
+        },
+      }
+    end,
+  },
+
   -- ┌─────────┐
   -- │ Copilot │
   -- └─────────┘
@@ -408,15 +431,6 @@ require('lazy').setup({
     version = '*',
     dependencies = 'nvim-tree/nvim-web-devicons',
     config = function()
-      vim.opt.termguicolors = true
-
-      require('nvim-web-devicons').setup {
-        override = {
-          nnn = { icon = '', color = '#00AFFF', cterm_color = '39', name = 'Nnn' },
-          lazygit = { icon = '', color = '#B83A1D', cterm_color = '160', name = 'LazyGit' },
-        },
-      }
-
       local bufferline = require 'bufferline'
       bufferline.setup {
         options = {
@@ -997,9 +1011,9 @@ require('lazy').setup({
         vim.o.titlestring = '%t - Neovide'
         -- using adwaita mono as braille fallback (for mini.map)
         if vim.fn.has 'win32' == 1 then
-          vim.o.guifont = 'FiraCode Nerd Font,Noto Sans CJK JP:h11'
+          vim.o.guifont = 'DejaVuSansM Nerd Font,Noto Sans CJK JP:h11'
         else
-          vim.o.guifont = 'FiraCode Nerd Font Mono,Adwaita Mono,Noto Sans CJK JP:h11'
+          vim.o.guifont = 'DejaVuSansM Nerd Font,Adwaita Mono,Noto Sans CJK JP:h11'
         end
         vim.g.neovide_opacity = 0.9
         -- vim.g.neovide_padding_top = 12
@@ -1098,7 +1112,7 @@ require('lazy').setup({
       require('mini.ai').setup { n_lines = 500 }
 
       -- surround
-      require('mini.surround').setup()
+      -- require('mini.surround').setup()
 
       -- map
       local minimap = require 'mini.map'
