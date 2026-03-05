@@ -1,0 +1,2 @@
+#!/bin/su root
+pacman -S --needed --asdeps $(expac -1S "%n\n%o" $1)

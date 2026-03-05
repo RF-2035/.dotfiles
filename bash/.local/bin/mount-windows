@@ -1,0 +1,15 @@
+#!/bin/su root
+WINDOWS_PARTITION=$(lsblk -o NAME,TYPE,LABEL | grep "part" | grep -i "Windows" | awk '{print $1}' | tr -d "─└├")
+if [ -z "$WINDOWS_PARTITION" ]; then
+	echo "Windows partition not found.\nPlease make sure the Windows partition is labeled 'Windows'." >&2
+	exit 1
+fi
+if [ ! -d "/run/media/$USER/Windows" ]; then
+	mkdir -p /run/media/$USER/Windows
+fi
+mount /dev/$WINDOWS_PARTITION /run/media/$USER/Windows
+if [ "$?" -ne 0 ]; then
+	echo "Failed to mount Windows partition." >&2
+	exit 1
+fi
+echo "Windows partition mounted at /run/media/$USER/Windows"

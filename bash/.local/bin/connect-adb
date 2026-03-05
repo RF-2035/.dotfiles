@@ -1,0 +1,189 @@
+#!/bin/bash
+
+# Check adb ip avahi-browse Exist
+for cmd in adb ip avahi-browse; do
+	if ! command -v $cmd &>/dev/null; then
+		echo "Please install '$cmd' first!" >&2
+		exit 1
+	fi
+done
+
+progressWait() {
+	local pid=$1
+	local msg=$2
+	{
+		local pct=0
+		while kill -0 "$pid" 2>/dev/null; do
+			echo "$pct"
+			local remain=$((99 - pct))
+			local step=$((remain / 5))
+			if [ "$step" -eq 0 ] && [ "$pct" -lt 99 ]; then
+				step=1
+			fi
+			pct=$((pct + step))
+			sleep 0.15
+		done
+		echo 100 # Snap to 100% when the background job completes
+	} | $DIALOG_APP --title "Working" --gauge "$msg" 6 50 0
+}
+
+dialogSelect() {
+	if [ "$(which dialog)" != "" ]; then
+		echo "dialog"
+		return 0
+	elif [ "$(which whiptail)" != "" ]; then
+		echo "whiptail"
+		return 0
+	else
+		echo "Please install whiptail or dialog first!" >&2
+		exit 1
+	fi
+}
+
+cleanUp() {
+	trap 'rm -f "$TMP_OUT"; exit 0' INT TERM EXIT
+	adb start-server &>/dev/null
+	local offline_devices=$(adb devices | grep -E '\boffline\b' | awk '{print $1}')
+	for dev in $offline_devices; do
+		adb disconnect "$dev" &>/dev/null
+	done
+}
+
+scanAndroidDevices() {
+	(
+		>"$TMP_OUT"
+
+		local avahi_conn=$(avahi-browse -rtp _adb-tls-connect._tcp 2>&1)
+		local avahi_pair=$(avahi-browse -rtp _adb-tls-pairing._tcp 2>&1)
+
+		if [[ "$avahi_conn" == *"Daemon not running"* ]]; then
+			echo "DAEMON_ERROR" >"$TMP_OUT"
+		else
+			local mdns_conn=$(echo "$avahi_conn" | grep "^=" | awk -F';' '{print $8":"$9}')
+			for dev in $mdns_conn; do
+				echo "$dev|Connect" >>"$TMP_OUT"
+			done
+
+			local mdns_pair=$(echo "$avahi_pair" | grep "^=" | awk -F';' '{print $8":"$9}')
+			for dev in $mdns_pair; do
+				echo "$dev|Pair" >>"$TMP_OUT"
+			done
+		fi
+	) &
+	progressWait $! "Scanning Services..."
+}
+
+checkAvahiDaemon() {
+	if grep -q "DAEMON_ERROR" "$TMP_OUT"; then
+		$DIALOG_APP --title "Avahi Daemon Offline" \
+			--msgbox "Avahi Daemon service offline.\nPlease start the Avahi Daemon." 8 50
+		clear
+		echo "Avahi Daemon service offline. Please start the Avahi Daemon."
+		exit 1
+	fi
+}
+
+buildMenuOptions() {
+	local -a raw_menu_options=() clean_menu_options=() seen=""
+
+	while IFS="|" read -r ip_port desc; do
+		if [ -n "$ip_port" ] && [ "$ip_port" != "DAEMON_ERROR" ]; then
+			raw_menu_options+=("$ip_port" "$desc")
+		fi
+	done <"$TMP_OUT"
+
+	for ((i = 0; i < ${#raw_menu_options[@]}; i += 2)); do
+		ip_port="${raw_menu_options[$i]}"
+		desc="${raw_menu_options[$i + 1]}"
+
+		if [[ ! " $seen " =~ " $ip_port " ]]; then
+			clean_menu_options+=("$ip_port" "$desc")
+			seen+="$ip_port "
+		fi
+	done
+	echo "${clean_menu_options[@]}"
+}
+
+pairDevice() {
+	local device="$1"
+	local pin=$($DIALOG_APP --title "Pairing $device" \
+		--inputbox "Enter the 6-digit Wi-Fi pairing code:" 8 50 \
+		3>&1 1>&2 2>&3)
+
+	if [ -z "$pin" ]; then
+		clear
+		echo "Pairing cancelled."
+		exit 0
+	fi
+
+	(adb pair "$device" "$pin" >"$TMP_OUT" 2>&1) &
+	progressWait $! "Pairing $device..."
+	local pair_out=$(<"$TMP_OUT")
+
+	if [[ "$pair_out" =~ "Successfully paired" ]]; then
+		$DIALOG_APP --title "Pairing Successful" --msgbox "${pair_out^}" 8 50
+		exec "$0"
+	else
+		$DIALOG_APP --title "Pairing Failed" --msgbox "${pair_out^}" 8 50
+		clear
+		echo "$pair_out"
+		exit 1
+	fi
+}
+
+connectDevice() {
+	local device="$1"
+
+	adb disconnect "$device" &>/dev/null
+
+	(adb connect "$device" >"$TMP_OUT" 2>&1) &
+	progressWait $! "Connecting to $device..."
+	local output=$(<"$TMP_OUT")
+
+	if [[ "$output" =~ "failed to connect to" ]] || [[ "$output" =~ "failed to authenticate" ]] || [[ "$output" =~ "Connection refused" ]]; then
+		if $DIALOG_APP --title "Connection Failed" \
+			--yesno "${output^}\n\n1. Tap 'Pair device with pairing code'.\n2. Tap 'Yes'." 15 65; then
+			exec "$0"
+		else
+			clear
+			echo "$output"
+			exit 1
+		fi
+	else
+		devices_out=$(adb devices | tail -n +2 | grep -v '^$')
+		if [ -z "$devices_out" ]; then
+			devices_out=""
+		fi
+		$DIALOG_APP --title "Connection Successful" --msgbox "${output^}\n\n$devices_out" 16 65
+		clear
+	fi
+}
+
+# --------------------------------------
+
+TMP_OUT=$(mktemp)
+DIALOG_APP=$(dialogSelect)
+
+cleanUp
+scanAndroidDevices
+checkAvahiDaemon
+
+MENU_OPTIONS=$(buildMenuOptions)
+
+# Display Selection Menu
+CHOICE=$($DIALOG_APP --title "ADB Wireless Connect" \
+	--menu "Select Android Device:" 15 65 6 \
+	$MENU_OPTIONS 3>&1 1>&2 2>&3)
+
+if [ -z "$CHOICE" ]; then
+	clear
+	echo "Operation cancelled by user."
+	exit 0
+fi
+
+# Check if the selected IP:PORT belongs to the Pairing list
+if grep -q "^$CHOICE|Pair$" "$TMP_OUT"; then
+	pairDevice "$CHOICE"
+else
+	connectDevice "$CHOICE"
+fi
