@@ -1041,21 +1041,6 @@ require('lazy').setup({
     end,
   },
 
-  -- transparent background
-  {
-    'xiyaowong/transparent.nvim',
-
-    config = function()
-      require('transparent').setup {
-        groups = { 'Normal' },
-        extra_groups = {},
-        exclude_groups = {},
-        on_clear = function() end,
-      }
-      vim.g.transparent_enabled = true
-    end,
-  },
-
   -- todo comments highlight
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
