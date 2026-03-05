@@ -27,28 +27,28 @@ visit_items = OFF
 use_scrollbar = OFF
 
 # Shadow dialog boxes? This also turns on color.
-use_shadow = ON
+use_shadow = OFF
 
 # Turn color support ON or OFF
 use_colors = ON
 
 # Screen color
-screen_color = (CYAN,BLUE,ON)
+screen_color = (DEFAULT,DEFAULT,ON)
 
 # Shadow color
-shadow_color = (BLACK,BLACK,ON)
+shadow_color = (BLACK,DEFAULT,ON)
 
 # Dialog box color
-dialog_color = (BLACK,WHITE,OFF)
+dialog_color = (BLACK,DEFAULT,OFF)
 
 # Dialog box title color
-title_color = (BLUE,WHITE,ON)
+title_color = (BLUE,DEFAULT,ON)
 
 # Dialog box border color
-border_color = (WHITE,WHITE,ON)
+border_color = (BLACK,DEFAULT,ON)
 
 # Active button color
-button_active_color = (WHITE,BLUE,ON)
+button_active_color = (BLACK,DEFAULT,ON,ON)
 
 # Inactive button color
 button_inactive_color = dialog_color
@@ -57,13 +57,13 @@ button_inactive_color = dialog_color
 button_key_active_color = button_active_color
 
 # Inactive button key color
-button_key_inactive_color = (RED,WHITE,OFF)
+button_key_inactive_color = (RED,DEFAULT,OFF)
 
 # Active button label color
-button_label_active_color = (YELLOW,BLUE,ON)
+button_label_active_color = (YELLOW,DEFAULT,ON,ON)
 
 # Inactive button label color
-button_label_inactive_color = (BLACK,WHITE,ON)
+button_label_inactive_color = (BLACK,DEFAULT,ON)
 
 # Input box color
 inputbox_color = dialog_color
@@ -105,7 +105,7 @@ tag_selected_color = button_label_active_color
 tag_key_color = button_key_inactive_color
 
 # Selected tag key color
-tag_key_selected_color = (RED,BLUE,ON)
+tag_key_selected_color = (RED,DEFAULT,ON)
 
 # Check box color
 check_color = dialog_color
@@ -114,22 +114,22 @@ check_color = dialog_color
 check_selected_color = button_active_color
 
 # Up arrow color
-uarrow_color = (GREEN,WHITE,ON)
+uarrow_color = (GREEN,DEFAULT,ON)
 
 # Down arrow color
 darrow_color = uarrow_color
 
 # Item help-text color
-itemhelp_color = (WHITE,BLACK,OFF)
+itemhelp_color = (BLACK,DEFAULT,OFF)
 
 # Active form text color
 form_active_text_color = button_active_color
 
 # Form text color
-form_text_color = (WHITE,CYAN,ON)
+form_text_color = (BLACK,DEFAULT,ON)
 
 # Readonly form item color
-form_item_readonly_color = (CYAN,WHITE,ON)
+form_item_readonly_color = (CYAN,DEFAULT,ON)
 
 # Dialog box gauge color
 gauge_color = title_color
