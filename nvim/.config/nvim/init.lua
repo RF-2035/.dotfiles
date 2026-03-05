@@ -339,6 +339,25 @@ require('lazy').setup({
     end,
   },
 
+  -- ┌────────────────────────┐
+  -- │ Color Picker & Preview │
+  -- └────────────────────────┘
+  {
+    'uga-rosa/ccc.nvim',
+    config = function()
+      -- NOTE: <leader>cp → color picker
+      require('ccc').setup {
+        highlighter = {
+          auto_enable = true,
+          lsp = true,
+        },
+      }
+      vim.keymap.set('n', '<leader>cp', function()
+        vim.cmd 'CccPick'
+      end, { desc = 'Color Picker', silent = true })
+    end,
+  },
+
   -- ┌─────────────────────────┐
   -- │ HTML & Markdown Preview │
   -- └─────────────────────────┘
