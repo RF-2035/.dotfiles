@@ -102,6 +102,12 @@ vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '<C-LeftMouse>', function()
   vim.ui.open(vim.fn.expand '<cfile>')
 end, { desc = 'Go to file under cursor (Ctrl + Left Mouse)' })
 
+-- NOTE: CTRL+<Insert> → copy to clipboard
+
+vim.keymap.set({ 'n', 'v' }, '<C-Insert>', '"+y', { desc = 'Copy to clipboard' })
+vim.keymap.set({ 'i', 'c' }, '<C-Insert>', '<Esc>"+y', { desc = 'Copy to clipboard' })
+vim.keymap.set('t', '<C-Insert>', '<C-\\><C-N>"+y', { desc = 'Copy to clipboard' })
+
 -- NOTE: SHIFT+<Insert> → paste from clipboard
 
 vim.keymap.set({ 'n', 'v' }, '<S-Insert>', '"+p', { desc = 'Paste from clipboard' })
