@@ -98,6 +98,11 @@ button.close,
 	&[disabled="true"] {
 		opacity: 0.5 !important;
 	}
+	
+	&[_moz-menuactive] {
+		outline: 2px solid var(--gnome-focus-border-color) !important;
+		outline-offset: -2px !important;
+	}
 }
 .subviewbutton-iconic {
 	-moz-box-pack: center !important;
@@ -174,7 +179,6 @@ button.popup-notification-primary-button:not(#hack),
 
 /* Buttons with margins */
 #nav-bar toolbarbutton:not(#urlbar-zoom-button, #urlbar-searchmode-switcher):not(.subviewbutton):not(.titlebar-button),
-.notification-button,
 .subviewbutton.panel-subview-footer:not(:only-of-type),
 .panel-footer button:not(:only-of-type):not(:last-child) {
 	margin: 0 calc(var(--gnome-toolbar-spacing) / 2) !important;

@@ -47,11 +47,18 @@ in Settings
 	display: none !important;
 }
 
-#main-window[titlepreface*="◌ "] #sidebar-box #sidebar-header {
+/* Hide Sidebar Header
+
+Bookmarks - Ctrl + B
+History - Ctrl + H
+Chatbot - Ctrl + Shift + X
+Sidebery - Ctrl + E
+*/
+#sidebar-box #sidebar-header {
 	display: none !important;
 }
 
 #sidebar-splitter {
-	width: 1px !important;
-	min-width: 1px !important;
+	width: 1.5px !important;
+	min-width: 1.5px !important;
 }
