@@ -24,19 +24,72 @@ progressWait() {
 			sleep 0.15
 		done
 		echo 100 # Snap to 100% when the background job completes
-	} | $DIALOG_APP --title "Working" --gauge "$msg" 6 50 0
+	} | dialogProgress "Working" "$msg"
 }
 
-dialogSelect() {
-	if [ "$(which dialog)" != "" ]; then
+dialogDetect() {
+	if [ -n "$DISPLAY" ] && command -v zenity &>/dev/null; then
+		echo "zenity"
+	elif command -v dialog &>/dev/null; then
 		echo "dialog"
-		return 0
-	elif [ "$(which whiptail)" != "" ]; then
+	elif command -v whiptail &>/dev/null; then
 		echo "whiptail"
-		return 0
 	else
-		echo "Please install whiptail or dialog first!" >&2
+		echo "Please install zenity, dialog, or whiptail first!" >&2
 		exit 1
+	fi
+}
+
+dialogProgress() {
+	if [ "$DIALOG_APP" == "zenity" ]; then
+		zenity --progress --title="$1" --text="$2" --width=400 --percentage=0 --auto-close
+	elif [ "$DIALOG_APP" == "dialog" ]; then
+		dialog --title "$1" --gauge "$2" 6 50 0
+	elif [ "$DIALOG_APP" == "whiptail" ]; then
+		whiptail --title "$1" --gauge "$2" 6 50 0
+	fi
+}
+
+dialogMsg() {
+	if [ "$DIALOG_APP" == "zenity" ]; then
+		zenity --info --title="$1" --text="$2" --width=400
+	elif [ "$DIALOG_APP" == "dialog" ]; then
+		dialog --title "$1" --msgbox "$2" 8 50
+	elif [ "$DIALOG_APP" == "whiptail" ]; then
+		whiptail --title "$1" --msgbox "$2" 8 50
+	fi
+}
+
+dialogInput() {
+	if [ "$DIALOG_APP" == "zenity" ]; then
+		zenity --entry --title="$1" --text="$2" --width=400
+	elif [ "$DIALOG_APP" == "dialog" ]; then
+		dialog --title "$1" --inputbox "$2" 8 50 3>&1 1>&2 2>&3
+	elif [ "$DIALOG_APP" == "whiptail" ]; then
+		whiptail --title "$1" --inputbox "$2" 8 50 3>&1 1>&2 2>&3
+	fi
+}
+
+dialogYesNo() {
+	if [ "$DIALOG_APP" == "zenity" ]; then
+		zenity --question --title="$1" --text="$2" --width=450
+		return $?
+	elif [ "$DIALOG_APP" == "dialog" ]; then
+		dialog --title "$1" --yesno "$2" 15 65
+		return $?
+	elif [ "$DIALOG_APP" == "whiptail" ]; then
+		whiptail --title "$1" --yesno "$2" 15 65
+		return $?
+	fi
+}
+
+dialogSelect2x() {
+	if [ "$DIALOG_APP" == "zenity" ]; then
+		zenity --list --title="$1" --text="$2" --width=600 --height=400 --column="Device" --column="Action" "${@:3}" 2>/dev/null
+	elif [ "$DIALOG_APP" == "dialog" ]; then
+		dialog --title "$1" --menu "$2" 15 60 4 "${@:3}" 3>&1 1>&2 2>&3
+	elif [ "$DIALOG_APP" == "whiptail" ]; then
+		whiptail --title "$1" --menu "$2" 15 60 4 "${@:3}" 3>&1 1>&2 2>&3
 	fi
 }
 
@@ -75,8 +128,7 @@ scanAndroidDevices() {
 
 checkAvahiDaemon() {
 	if grep -q "DAEMON_ERROR" "$TMP_OUT"; then
-		$DIALOG_APP --title "Avahi Daemon Offline" \
-			--msgbox "Avahi Daemon service offline.\nPlease start the Avahi Daemon." 8 50
+		dialogMsg "Avahi Daemon Offline" "Avahi Daemon service offline.\nPlease start the Avahi Daemon."
 		clear
 		echo "Avahi Daemon service offline. Please start the Avahi Daemon."
 		exit 1
@@ -106,9 +158,7 @@ buildMenuOptions() {
 
 pairDevice() {
 	local device="$1"
-	local pin=$($DIALOG_APP --title "Pairing $device" \
-		--inputbox "Enter the 6-digit Wi-Fi pairing code:" 8 50 \
-		3>&1 1>&2 2>&3)
+	local pin=$(dialogInput "Pairing $device" "Enter the 6-digit Wi-Fi pairing code:")
 
 	if [ -z "$pin" ]; then
 		clear
@@ -121,10 +171,10 @@ pairDevice() {
 	local pair_out=$(<"$TMP_OUT")
 
 	if [[ "$pair_out" =~ "Successfully paired" ]]; then
-		$DIALOG_APP --title "Pairing Successful" --msgbox "${pair_out^}" 8 50
+		dialogMsg "Pairing Successful" "${pair_out^}"
 		exec "$0"
 	else
-		$DIALOG_APP --title "Pairing Failed" --msgbox "${pair_out^}" 8 50
+		dialogMsg "Pairing Failed" "${pair_out^}"
 		clear
 		echo "$pair_out"
 		exit 1
@@ -141,8 +191,7 @@ connectDevice() {
 	local output=$(<"$TMP_OUT")
 
 	if [[ "$output" =~ "failed to connect to" ]] || [[ "$output" =~ "failed to authenticate" ]] || [[ "$output" =~ "Connection refused" ]]; then
-		if $DIALOG_APP --title "Connection Failed" \
-			--yesno "${output^}\n\n1. Tap 'Pair device with pairing code'.\n2. Tap 'Yes'." 15 65; then
+		if dialogYesNo "Connection Failed" "${output^}\n\n1. Tap 'Pair device with pairing code'.\n2. Tap 'Yes'."; then
 			exec "$0"
 		else
 			clear
@@ -154,7 +203,7 @@ connectDevice() {
 		if [ -z "$devices_out" ]; then
 			devices_out=""
 		fi
-		$DIALOG_APP --title "Connection Successful" --msgbox "${output^}\n\n$devices_out" 16 65
+		dialogMsg "Connection Successful" "${output^}\n\n$devices_out"
 		clear
 	fi
 }
@@ -162,7 +211,7 @@ connectDevice() {
 # --------------------------------------
 
 TMP_OUT=$(mktemp)
-DIALOG_APP=$(dialogSelect)
+DIALOG_APP=$(dialogDetect) || exit 1
 
 cleanUp
 scanAndroidDevices
@@ -170,10 +219,15 @@ checkAvahiDaemon
 
 MENU_OPTIONS=$(buildMenuOptions)
 
+if [ -z "$MENU_OPTIONS" ]; then
+	dialogMsg "No Devices Found" "No Android devices found on the network."
+	clear
+	echo "No Android devices found."
+	exit 0
+fi
+
 # Display Selection Menu
-CHOICE=$($DIALOG_APP --title "ADB Wireless Connect" \
-	--menu "Select Android Device:" 15 65 6 \
-	$MENU_OPTIONS 3>&1 1>&2 2>&3)
+CHOICE=$(dialogSelect2x "ADB Wireless Connect" "Select Android Device:" $MENU_OPTIONS)
 
 if [ -z "$CHOICE" ]; then
 	clear

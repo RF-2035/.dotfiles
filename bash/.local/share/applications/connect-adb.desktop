@@ -6,7 +6,6 @@ GenericName=Android Debug Bridge over Wi-Fi
 Comment=Connect to Android devices wirelessly using ADB (Android Debug Bridge) for debugging and development purposes.
 Icon=xsi-network-wireless-acquiring-symbolic
 Exec=connect-adb
-Terminal=true
 Actions=
 Categories=Debug;Development;
 Keywords=adb;android;debugging;wireless;development;
