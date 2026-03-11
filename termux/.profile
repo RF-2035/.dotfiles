@@ -1,5 +1,5 @@
 dialogSelect() {
-	dialog --title "$1" --menu "$2" 15 60 5 "${@:3}" 2>&1 >/dev/tty
+	dialog --title "$1" --menu "$2" 15 50 5 "${@:3}" 2>&1 >/dev/tty
 }
 
 # --------------------------------------
