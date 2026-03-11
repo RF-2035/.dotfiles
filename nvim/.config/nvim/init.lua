@@ -465,6 +465,18 @@ require('lazy').setup({
       local bufferline = require 'bufferline'
       bufferline.setup {
         options = {
+          close_command = function(bufnum)
+            if vim.api.nvim_get_current_buf() == bufnum then
+              vim.cmd 'bprevious'
+            end
+            vim.cmd('bdelete ' .. bufnum)
+          end,
+          right_mouse_command = function(bufnum)
+            if vim.api.nvim_get_current_buf() == bufnum then
+              vim.cmd 'bprevious'
+            end
+            vim.cmd('bdelete ' .. bufnum)
+          end,
           always_show_bufferline = false,
           auto_toggle_bufferline = true,
           style_preset = bufferline.style_preset.no_italic,
