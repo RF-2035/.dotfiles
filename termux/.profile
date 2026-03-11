@@ -14,7 +14,7 @@ while true; do
 		options+=("$i" "$filename") # Add tag and item as separate array elements
 		file_map[$i]="$file"        # Store the full path for execution later
 		((i++))
-	done < <(find "$HOME/.local/bin" -maxdepth 1 -type f -executable -print0)
+	done < <(find -L "$HOME/.local/bin" -maxdepth 1 -type f -executable -print0)
 
 	if [ ${#options[@]} -eq 0 ]; then
 		clear
