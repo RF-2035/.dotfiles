@@ -114,6 +114,12 @@ vim.keymap.set({ 'n', 'v' }, '<S-Insert>', '"+p', { desc = 'Paste from clipboard
 vim.keymap.set({ 'i', 'c' }, '<S-Insert>', '<C-R>+', { desc = 'Paste from clipboard' })
 vim.keymap.set('t', '<S-Insert>', '<C-\\><C-N>"+p', { desc = 'Paste from clipboard' })
 
+-- NOTE: CTRL+SHIFT+<Insert> → paste from clipboard
+
+vim.keymap.set({ 'n', 'v' }, '<C-S-Insert>', '"+p', { desc = 'Paste from clipboard' })
+vim.keymap.set({ 'i', 'c' }, '<C-S-Insert>', '<C-R>+', { desc = 'Paste from clipboard' })
+vim.keymap.set('t', '<C-S-Insert>', '<C-\\><C-N>"+p', { desc = 'Paste from clipboard' })
+
 -- NOTE: <leader>t → toggle
 
 vim.api.nvim_create_autocmd('TermClose', {
@@ -478,10 +484,13 @@ require('lazy').setup({
       end, { desc = 'Add', silent = true })
 
       vim.keymap.set('n', '<leader>bq', function()
+        local current_buf = vim.api.nvim_get_current_buf()
+
         if #vim.fn.getbufinfo { buflisted = 1 } <= 1 then
           vim.cmd 'quit'
         else
-          vim.cmd 'bdelete'
+          vim.cmd 'bprevious'
+          vim.cmd('bdelete ' .. current_buf)
         end
       end, { desc = 'Quit', silent = true })
 
