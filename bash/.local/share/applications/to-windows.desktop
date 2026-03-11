@@ -6,7 +6,6 @@ GenericName=Reboot into Windows from Linux
 Comment=Reboot your computer from Linux into Windows with a single click, allowing for a seamless transition between operating systems without the need for manual rebooting or BIOS configuration.
 Icon=xsi-network-transmit-symbolic
 Exec=to-windows
-Terminal=true
 Actions=
 Categories=System;System-Tools;Utility;
 Keywords=reboot;windows;linux;dual-boot;system;utility;

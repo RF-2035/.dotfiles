@@ -1,7 +1,182 @@
-#!/bin/su root
-WINDOWS_ENTRY=$(grep -i windows /boot/grub/grub.cfg | cut -d "'" -f 2)
-if [ -z "$WINDOWS_ENTRY" ]; then
-	echo "Windows boot entry not found." >&2
-	exit 1
+#!/bin/bash
+
+progressWait() {
+	local pid=$1
+	local msg=$2
+	{
+		local pct=0
+		while kill -0 "$pid" 2>/dev/null; do
+			echo "$pct"
+			local remain=$((99 - pct))
+			local step=$((remain / 5))
+			if [ "$step" -eq 0 ] && [ "$pct" -lt 99 ]; then
+				step=1
+			fi
+			pct=$((pct + step))
+			sleep 0.15
+		done
+		echo 100 # Snap to 100% when the background job completes
+	} | dialogProgress "Working" "$msg"
+}
+
+dialogDetect() {
+	if [ -n "$DISPLAY" ] && command -v zenity &>/dev/null; then
+		echo "zenity"
+	elif command -v dialog &>/dev/null; then
+		echo "dialog"
+	elif command -v whiptail &>/dev/null; then
+		echo "whiptail"
+	else
+		echo "Please install zenity, dialog, or whiptail first!" >&2
+		exit 1
+	fi
+}
+
+dialogMsg() {
+	if [ "$DIALOG_APP" == "zenity" ]; then
+		zenity --info --title="$1" --text="$2"
+	elif [ "$DIALOG_APP" == "dialog" ]; then
+		dialog --title "$1" --msgbox "$2" 8 50
+	elif [ "$DIALOG_APP" == "whiptail" ]; then
+		whiptail --title "$1" --msgbox "$2" 8 50
+	fi
+}
+
+dialogYesNo() {
+	if [ "$DIALOG_APP" == "zenity" ]; then
+		zenity --question --title="$1" --text="$2"
+		return $?
+	elif [ "$DIALOG_APP" == "dialog" ]; then
+		dialog --title "$1" --yesno "$2" 15 65
+		return $?
+	elif [ "$DIALOG_APP" == "whiptail" ]; then
+		whiptail --title "$1" --yesno "$2" 15 65
+		return $?
+	fi
+}
+
+dialogProgress() {
+	if [ "$DIALOG_APP" == "zenity" ]; then
+		zenity --progress --title="$1" --text="$2" --width=400 --percentage=0 --auto-close
+	elif [ "$DIALOG_APP" == "dialog" ]; then
+		dialog --title "$1" --gauge "$2" 6 50 0
+	elif [ "$DIALOG_APP" == "whiptail" ]; then
+		whiptail --title "$1" --gauge "$2" 6 50 0
+	fi
+}
+
+dialogSelect2x() {
+	if [ "$DIALOG_APP" == "zenity" ]; then
+		zenity --list --title="$1" --text="$2" --width=450 --height=300 --column="---" --column="Operation" "${@:3}" 2>/dev/null
+	elif [ "$DIALOG_APP" == "dialog" ]; then
+		dialog --title "$1" --menu "$2" 15 60 4 "${@:3}" 3>&1 1>&2 2>&3
+	elif [ "$DIALOG_APP" == "whiptail" ]; then
+		whiptail --title "$1" --menu "$2" 15 60 4 "${@:3}" 3>&1 1>&2 2>&3
+	fi
+}
+
+containerUp() {
+	local output=$(<"$TMP_OUT")
+
+	podman-compose --file ~/.config/winapps/compose.yaml up -d >"$TMP_OUT" 2>&1 &
+	progressWait $! "Starting Windows container..."
+
+	local status=$(podman ps --filter "name=WinApps" --format "{{.Status}}" 2>/dev/null)
+
+	if [ "$status" != "" ]; then
+		if [-z "$output" ]; then
+			dialogMsg "  :  $status" "Success.\n\n$output"
+		else
+			dialogMsg "  :  $status" "Success."
+		fi
+	else
+		if [-z "$output" ]; then
+			dialogYesNo "  :  (not running)" "$output\n\nRetry?"
+		else
+			dialogYesNo "  :  (not running)" "Unknown Error.\n\nRetry?"
+		fi
+		if [ $? -eq 0 ]; then
+			containerUp
+		fi
+	fi
+}
+
+containerDown() {
+	local output=$(<"$TMP_OUT")
+
+	podman-compose --file ~/.config/winapps/compose.yaml down >"$TMP_OUT" 2>&1 &
+	progressWait $! "Stopping Windows container..."
+
+	local status=$(podman ps --filter "name=WinApps" --format "{{.Status}}" 2>/dev/null)
+
+	if [ "$status" == "" ]; then
+		if [-z "$output" ]; then
+			dialogMsg "  :  (not running)" "Success.\n\n$output"
+		else
+			dialogMsg "  :  (not running)" "Success."
+		fi
+	else
+		if [-z "$output" ]; then
+			dialogYesNo "  :  $status" "$output\n\nRetry?"
+		else
+			dialogYesNo "  :  $status" "Unknown Error.\n\nRetry?"
+		fi
+		if [ $? -eq 0 ]; then
+			containerDown
+		fi
+	fi
+}
+
+rebootWindows() {
+	WINDOWS_ENTRY=$(grep -i windows /boot/grub/grub.cfg | cut -d "'" -f 2)
+	if [ -z "$WINDOWS_ENTRY" ]; then
+		dialogMsg "Error" "Windows boot entry not found."
+		return
+	fi
+	pkexec sh -c "grub-reboot '$WINDOWS_ENTRY' && reboot"
+}
+
+# --------------------------------------
+
+TMP_OUT=$(mktemp)
+DIALOG_APP=$(dialogDetect)
+
+if [ ! -f ~/.config/winapps/compose.yaml ]; then
+	if dialogYesNo "Configuration Required" "~/.config/winapps/compose.yaml Not Found.\n\nDownload from WinApps?"; then
+		mkdir -p ~/.config/winapps
+		wget -O ~/.config/winapps/compose.yaml https://raw.githubusercontent.com/winapps-org/winapps/main/compose.yaml &
+		progressWait $! "Downloading compose.yaml..."
+		dialogMsg "Configuration Created" "~/.config/winapps/compose.yaml Downloaded from WinApps."
+	else
+		exit 1
+	fi
+	return
 fi
-grub-reboot "$WINDOWS_ENTRY" && sudo reboot
+
+WINAPPS_STATUS=$(podman ps --filter "name=WinApps" --format "{{.Status}}" 2>/dev/null)
+
+if [ "$WINAPPS_STATUS" == "" ]; then
+	WINAPPS_STATUS="(not running)"
+fi
+
+MENU_OPTIONS=(
+	"󰐋" "Start WinApps Container"
+	"󰛲" "Stop WinApps Container"
+	"󰈆" "Reboot to Windows"
+)
+CHOICE=$(dialogSelect2x "WinApps Manager" "  :  $WINAPPS_STATUS" "${MENU_OPTIONS[@]}")
+
+case $CHOICE in
+"󰐋")
+	containerUp
+	;;
+"󰛲")
+	containerDown
+	;;
+"󰈆")
+	rebootWindows
+	;;
+*)
+	exit 0
+	;;
+esac
