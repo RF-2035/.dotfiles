@@ -127,6 +127,9 @@ vim.api.nvim_create_autocmd('TermClose', {
   callback = function(event)
     if vim.v.event.status == 0 then
       if vim.api.nvim_buf_is_valid(event.buf) then
+        if vim.api.nvim_get_current_buf() == event.buf then
+          vim.cmd 'bprevious'
+        end
         vim.api.nvim_buf_delete(event.buf, { force = true })
       end
     end
