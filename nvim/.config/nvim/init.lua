@@ -210,7 +210,7 @@ end, { desc = 'Escape/Backtick', silent = true })
 
 -- NOTE: <leader>c → commands
 
--- Paste as Commands
+-- <leader>ce → Paste as Commands
 vim.keymap.set('n', '<leader>ce', function()
   local cmds = vim.fn.getreg '"'
   if not cmds or #cmds == 0 then
@@ -229,7 +229,8 @@ vim.keymap.set('n', '<leader>ce', function()
   end
 end, { desc = 'Execute', silent = true })
 
--- NOTE: <leader>l → LSP
+-- <leader>cl → List Locations
+vim.keymap.set('n', '<leader>cl', vim.diagnostic.setloclist, { desc = 'List Locations' })
 
 vim.keymap.set('n', '<leader>ll', vim.diagnostic.setloclist, { desc = 'List Locations' })
 -- <leader>lf → LSP format (set under `conform.nvim`)
@@ -759,7 +760,6 @@ require('lazy').setup({
         { '<leader>a', group = 'Assist' },
         { '<leader>b', group = 'Buffer' },
         { '<leader>c', group = 'Commands' },
-        { '<leader>l', group = 'LSP' },
       },
     },
   },
@@ -1037,7 +1037,7 @@ require('lazy').setup({
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
-    -- NOTE: <leader>lf → format buffer
+    -- NOTE: <leader>cf → format buffer
     keys = {
       {
         '<leader>lf',
