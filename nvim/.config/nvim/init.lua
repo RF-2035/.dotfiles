@@ -8,9 +8,9 @@
 --  │   - locale-gen                                                           │
 --  │                                                                          │
 --  │ install the dependencies:                                                │
---  │   - pacman -S neovim git base-devel stow yarn nnn fzf lazygit gemini-cli │
+--  │   - pacman -S neovim git base-devel stow yarn nnn fzf lazygit tmux       │
 --  │   - git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si │
---  │   - yay -S pandoc-bin                                                    │
+--  │   - yay -S pandoc-bin gemini-cli-live-bin                                │
 --  │                                                                          │
 --  │ apply the config:                                                        │
 --  │   - git clone https://github.com/RF-2035/.dotfiles.git ~/.dotfiles       │
@@ -152,12 +152,6 @@ vim.keymap.set('n', '<leader>tn', function()
   vim.cmd 'file nnn'
   vim.cmd 'startinsert'
 end, { desc = 'Nnn', silent = true })
-
-vim.keymap.set('n', '<leader>ta', function()
-  vim.cmd 'terminal gemini'
-  vim.cmd 'file Gemini'
-  vim.cmd 'startinsert'
-end, { desc = 'Gemini', silent = true })
 
 -- <leader>tp → toggle clipboard sharing
 
@@ -335,17 +329,135 @@ require('lazy').setup({
     end,
   },
 
-  -- ┌─────────┐
-  -- │ Copilot │
-  -- └─────────┘
-  {
-    'github/copilot.vim',
+  -- ┌─────────────┐
+  -- │ Vibe Coding │
+  -- └─────────────┘
+  { -- Copilot Completion
+    'zbirenbaum/copilot.lua',
+    cmd = 'Copilot',
+    event = 'InsertEnter',
     config = function()
+      require('copilot').setup {
+        suggestion = {
+          auto_trigger = true,
+          keymap = {
+            -- NOTE: <Tab> → complete, <C-Tab> → dismiss
+            -- NOTE: <M-]> → next, <M-[> → previous
+            accept = false, -- Handled by Super-tab
+            accept_word = false,
+            accept_line = false,
+            next = '<M-]>',
+            prev = '<M-[>',
+            dismiss = '<C-Tab>',
+            toggle_auto_trigger = false,
+          },
+        },
+        filetypes = {
+          ['*'] = true,
+        },
+      }
       -- NOTE: <leader>cc → copilot panel
       vim.keymap.set('n', '<leader>cc', function()
         vim.cmd 'Copilot panel'
       end, { desc = 'Completions', silent = true })
     end,
+  },
+  { -- Copilot NES (Next Edit Suggestion)
+    'copilotlsp-nvim/copilot-lsp',
+  },
+  { -- Sidekick CLI for LSP-powered tools and Copilot NES
+    'folke/sidekick.nvim',
+    opts = {
+      cli = {
+        mux = {
+          enabled = true,
+          backend = 'tmux',
+        },
+      },
+    },
+
+    keys = {
+      {
+        '<c-]>',
+        function()
+          -- if there is a next edit, jump to it, otherwise apply it if any
+          if not require('sidekick').nes_jump_or_apply() then
+            return '<c-]>' -- fallback to normal <c-]>
+          end
+        end,
+        expr = true,
+        desc = 'Goto/Apply Next Edit Suggestion',
+      },
+      {
+        '<c-.>',
+        function()
+          require('sidekick.cli').toggle()
+        end,
+        desc = 'Sidekick Toggle',
+        mode = { 'n', 't', 'i', 'x' },
+      },
+      {
+        '<leader>aa',
+        function()
+          require('sidekick.cli').toggle()
+        end,
+        desc = 'Toggle',
+      },
+      {
+        '<leader>as',
+        function()
+          require('sidekick.cli').select()
+        end,
+        -- Or to select only installed tools:
+        -- require("sidekick.cli").select({ filter = { installed = true } })
+        desc = 'Select',
+      },
+      {
+        '<leader>ad',
+        function()
+          require('sidekick.cli').close()
+        end,
+        desc = 'Detach',
+      },
+      {
+        '<leader>at',
+        function()
+          require('sidekick.cli').send { msg = '{this}' }
+        end,
+        mode = { 'x', 'n' },
+        desc = 'This',
+      },
+      {
+        '<leader>af',
+        function()
+          require('sidekick.cli').send { msg = '{file}' }
+        end,
+        desc = 'File',
+      },
+      {
+        '<leader>av',
+        function()
+          require('sidekick.cli').send { msg = '{selection}' }
+        end,
+        mode = { 'x' },
+        desc = 'Visual Selection',
+      },
+      {
+        '<leader>ap',
+        function()
+          require('sidekick.cli').prompt()
+        end,
+        mode = { 'n', 'x' },
+        desc = 'Prompt',
+      },
+      {
+        '<leader>ag',
+        function()
+          require('sidekick.cli').toggle { name = 'gemini', focus = true }
+        end,
+        desc = 'Gemini',
+      },
+    },
   },
 
   -- ┌────────────────────────┐
@@ -629,6 +741,7 @@ require('lazy').setup({
         { '<leader>s', group = 'Search' },
         { '<leader>t', group = 'Toggle' },
         { '<leader>h', group = 'Git Hunk', mode = { 'n', 'v' } },
+        { '<leader>a', group = 'Assist' },
         { '<leader>b', group = 'Buffer' },
         { '<leader>c', group = 'Commands' },
         { '<leader>l', group = 'LSP' },
@@ -1004,6 +1117,36 @@ require('lazy').setup({
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
         preset = 'default',
+
+        ['<Tab>'] = {
+          function(cmp)
+            -- 1. Completion Menu
+            if cmp.is_visible() then
+              return cmp.select_next()
+            end
+
+            -- 2. Copilot Suggestion (Ghost Text)
+            local copilot_suggestion = require 'copilot.suggestion'
+            if copilot_suggestion.is_visible() then
+              copilot_suggestion.accept()
+              return true
+            end
+
+            -- 3. Sidekick Next Edit Suggestion (NES)
+            if require('sidekick').nes_jump_or_apply() then
+              return true
+            end
+
+            -- 4. Snippets (Jump Forward)
+            if cmp.snippet_active() then
+              return cmp.snippet_forward()
+            end
+
+            -- 5. Fallback
+            return false
+          end,
+          'fallback',
+        },
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
