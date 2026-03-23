@@ -1281,6 +1281,24 @@ require('lazy').setup({
       -- apply the colorscheme
       vim.cmd 'colorscheme adwaita'
 
+      -- set terminal colors (ptyxis gnome.palette)
+      vim.g.terminal_color_0 = '#1d1d20'
+      vim.g.terminal_color_1 = '#c01c28'
+      vim.g.terminal_color_2 = '#26a269'
+      vim.g.terminal_color_3 = '#a2734c'
+      vim.g.terminal_color_4 = '#12488b'
+      vim.g.terminal_color_5 = '#a347ba'
+      vim.g.terminal_color_6 = '#2aa1b3'
+      vim.g.terminal_color_7 = '#cfcfcf'
+      vim.g.terminal_color_8 = '#5d5d5d'
+      vim.g.terminal_color_9 = '#f66151'
+      vim.g.terminal_color_10 = '#33d17a'
+      vim.g.terminal_color_11 = '#e9ad0c'
+      vim.g.terminal_color_12 = '#2a7bde'
+      vim.g.terminal_color_13 = '#c061cb'
+      vim.g.terminal_color_14 = '#33c7de'
+      vim.g.terminal_color_15 = '#ffffff'
+
       vim.api.nvim_create_autocmd({ 'ColorScheme', 'LspAttach' }, {
         callback = function()
           -- use underline to indicate document highlight
