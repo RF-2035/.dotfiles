@@ -105,20 +105,35 @@ end, { desc = 'Go to file under cursor (Ctrl + Left Mouse)' })
 -- NOTE: CTRL+<Insert> → copy to clipboard
 
 vim.keymap.set({ 'n', 'v' }, '<C-Insert>', '"+y', { desc = 'Copy to clipboard' })
-vim.keymap.set({ 'i', 'c' }, '<C-Insert>', '<Esc>"+y', { desc = 'Copy to clipboard' })
+vim.keymap.set({ 'i' }, '<C-Insert>', '<Esc>"+y', { desc = 'Copy to clipboard' })
 vim.keymap.set('t', '<C-Insert>', '<C-\\><C-N>"+y', { desc = 'Copy to clipboard' })
+
+-- NOTE: CTRL+SHIFT+C → copy to clipboard
+
+vim.keymap.set({ 'n', 'v' }, '<C-S-c>', '"+y', { desc = 'Copy to clipboard' })
+vim.keymap.set({ 'i' }, '<C-S-c>', '<Esc>"+y', { desc = 'Copy to clipboard' })
+vim.keymap.set('t', '<C-S-c>', '<C-\\><C-N>"+y', { desc = 'Copy to clipboard' })
 
 -- NOTE: SHIFT+<Insert> → paste from clipboard
 
 vim.keymap.set({ 'n', 'v' }, '<S-Insert>', '"+p', { desc = 'Paste from clipboard' })
-vim.keymap.set({ 'i', 'c' }, '<S-Insert>', '<C-R>+', { desc = 'Paste from clipboard' })
+vim.keymap.set({ 'i' }, '<S-Insert>', '<Esc>"+p', { desc = 'Paste from clipboard' })
+vim.keymap.set({ 'c' }, '<S-Insert>', '<C-R>+', { desc = 'Paste from clipboard' })
 vim.keymap.set('t', '<S-Insert>', '<C-\\><C-N>"+p', { desc = 'Paste from clipboard' })
 
 -- NOTE: CTRL+SHIFT+<Insert> → paste from clipboard
 
 vim.keymap.set({ 'n', 'v' }, '<C-S-Insert>', '"+p', { desc = 'Paste from clipboard' })
-vim.keymap.set({ 'i', 'c' }, '<C-S-Insert>', '<C-R>+', { desc = 'Paste from clipboard' })
+vim.keymap.set({ 'i' }, '<C-S-Insert>', '<Esc>"+p', { desc = 'Paste from clipboard' })
+vim.keymap.set({ 'c' }, '<C-S-Insert>', '<C-R>+', { desc = 'Paste from clipboard' })
 vim.keymap.set('t', '<C-S-Insert>', '<C-\\><C-N>"+p', { desc = 'Paste from clipboard' })
+
+-- NOTE: CTRL+SHIFT+V → paste from clipboard
+
+vim.keymap.set({ 'n', 'v' }, '<C-S-v>', '"+p', { desc = 'Paste from clipboard' })
+vim.keymap.set({ 'i' }, '<C-S-v>', '<Esc>"+p', { desc = 'Paste from clipboard' })
+vim.keymap.set({ 'c' }, '<C-S-v>', '<C-R>+', { desc = 'Paste from clipboard' })
+vim.keymap.set('t', '<C-S-v>', '<C-\\><C-N>"+p', { desc = 'Paste from clipboard' })
 
 -- NOTE: <leader>t → toggle
 
