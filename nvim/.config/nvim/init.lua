@@ -232,8 +232,59 @@ end, { desc = 'Execute', silent = true })
 -- <leader>cl → List Locations
 vim.keymap.set('n', '<leader>cl', vim.diagnostic.setloclist, { desc = 'List Locations' })
 
-vim.keymap.set('n', '<leader>ll', vim.diagnostic.setloclist, { desc = 'List Locations' })
--- <leader>lf → LSP format (set under `conform.nvim`)
+-- <leader>cf → LSP format (set under `conform.nvim`)
+
+-- <leader>cs → search online
+vim.keymap.set('n', '<leader>cs', function()
+  local selection = vim.fn.getreg '"'
+  if not selection or #selection == 0 then
+    vim.notify('No text selected.', vim.log.levels.WARN)
+    return
+  end
+  local lines = vim.split(selection, '\n')
+  for _, line in ipairs(lines) do
+    if line:match '%S' then -- Only search non-empty lines
+      local query = line:gsub('%s+', '+')
+      local search_url = 'https://libgen.li/index.php?req=' .. query
+      vim.ui.open(search_url)
+      vim.wait(200)
+    end
+  end
+end, { desc = 'Search: LibGen', silent = true })
+
+-- <leader>cd → DOI to APA
+vim.keymap.set('n', '<leader>cd', function()
+  local clipboard = vim.fn.getreg '"'
+  if not clipboard or #clipboard == 0 then
+    vim.notify('Clipboard is empty.', vim.log.levels.WARN)
+    return
+  end
+  local doi_list = vim.split(clipboard, '\n')
+  local citations = {}
+  for _, doi in ipairs(doi_list) do
+    doi = doi:gsub('%s+', '')
+    if #doi > 0 then
+      vim.notify('Processing: ' .. doi, vim.log.levels.INFO)
+      local cmd = {
+        'curl',
+        '-sSLH', -- s: silent, S: show errors, L: follow redirects
+        'Accept: text/x-bibliography; style=apa',
+        'https://doi.org/' .. doi,
+      }
+      local result = vim.fn.system(cmd)
+      if vim.v.shell_error == 0 and not result:match '<!DOCTYPE html>' then
+        table.insert(citations, vim.trim(result))
+      else
+        vim.notify('Failed to fetch: ' .. doi, vim.log.levels.INFO)
+      end
+    end
+  end
+  if #citations > 0 then
+    local citations_string = table.concat(citations, '\n')
+    vim.fn.setreg('+', citations_string)
+    vim.notify('Citations copied to clipboard.', vim.log.levels.INFO)
+  end
+end, { desc = 'Search: DOI' })
 
 -- ┌──────────────────────┐
 -- │ Keymaps for Markdown │
@@ -1040,7 +1091,7 @@ require('lazy').setup({
     -- NOTE: <leader>cf → format buffer
     keys = {
       {
-        '<leader>lf',
+        '<leader>cf',
         function()
           require('conform').format { async = true, lsp_format = 'fallback' }
         end,
