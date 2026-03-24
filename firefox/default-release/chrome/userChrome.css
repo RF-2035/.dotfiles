@@ -1,6 +1,4 @@
-@import "firefox-gnome-theme/userChrome.css";
-
-/* Firefox Gnome Theme with Sidebery support
+/* Firefox with Sidebery support
 
 in about:config
 
@@ -14,25 +12,25 @@ in Sidebery Settings
 
 ```
 #root.root {--general-border-radius: 8px;}
-#root.root {--bottom-bar-height: 34px;}
+#root.root {--bottom-bar-height: 32px;}
 #root.root {--general-margin: 0px;}
-#root.root {--bookmarks-bookmark-height: 34px;}
-#root.root {--bookmarks-folder-height: 34px;}
-#root.root {--bookmarks-margin: 6px;}
-#root.root {--tabs-margin: 6px;}
-#root.root {--tabs-pinned-height: 34px;}
-#root.root {--tabs-pinned-width: 34px;}
-#root.root {--tabs-height: 34px;}
-#root.root {--nav-btn-margin: 6px;}
-#root.root {--nav-btn-active-shadow: none;}
-#root.root {--nav-btn-width: 34px;}
-#root.root {--nav-btn-height: 34px;}
-#root.root {--tabs-activated-shadow: none;}
+#root.root {--bookmarks-bookmark-height: 32px;}
+#root.root {--bookmarks-folder-height: 32px;}
+#root.root {--bookmarks-margin: 8px;}
+#root.root {--tabs-margin: 8px;}
+#root.root {--tabs-pinned-height: 32px;}
+#root.root {--tabs-pinned-width: 32px;}
+#root.root {--tabs-height: 32px;}
+#root.root {--nav-btn-margin: 4px;}
+#root.root {--nav-btn-width: 32px;}
+#root.root {--nav-btn-height: 32px;}
+#root.root {--nav-btn-active-shadow: none; }
 #root.root {--bookmarks-expanded-folder-shadow: none;}
 ```
 
 in Settings
 
+- in Appearance, set "Font size" S
 - disable "Show sidebar" to make Sidebery immersive
 
 */
