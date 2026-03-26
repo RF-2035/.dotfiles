@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ -n "$TMUX" ]; then
+  tmux choose-tree -Zs
+else
+  tmux attach \; choose-tree -Zs 2>/dev/null || {
+    read -p "Create session " sn
+    tmux new-session -s "$sn"
+  }
+fi
