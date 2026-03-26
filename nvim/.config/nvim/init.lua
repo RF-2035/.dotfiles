@@ -182,6 +182,14 @@ vim.keymap.set({ 'n', 'v' }, '<leader>tp', function()
   end
 end, { desc = 'Clipboard', silent = true })
 
+-- if clipboard sharing is enabled, get from + register, otherwise from " register
+
+local function clipboard_get()
+  local clipboard_option = vim.opt.clipboard:get()
+  local register = vim.tbl_contains(clipboard_option, 'unnamedplus') and '+' or '"'
+  return vim.fn.getreg(register)
+end
+
 -- <leader>te → toggle swapping ` and <Esc>
 
 local keys_swapped = false
@@ -212,7 +220,7 @@ end, { desc = 'Escape/Backtick', silent = true })
 
 -- <leader>ce → Paste as Commands
 vim.keymap.set('n', '<leader>ce', function()
-  local cmds = vim.fn.getreg '"'
+  local cmds = clipboard_get()
   if not cmds or #cmds == 0 then
     vim.notify('Clipboard is empty.', vim.log.levels.WARN)
     return
@@ -236,9 +244,9 @@ vim.keymap.set('n', '<leader>cl', vim.diagnostic.setloclist, { desc = 'List Loca
 
 -- <leader>cs → search online
 vim.keymap.set('n', '<leader>cs', function()
-  local selection = vim.fn.getreg '"'
+  local selection = clipboard_get()
   if not selection or #selection == 0 then
-    vim.notify('No text selected.', vim.log.levels.WARN)
+    vim.notify('Clipboard is empty.', vim.log.levels.WARN)
     return
   end
   local lines = vim.split(selection, '\n')
@@ -254,7 +262,7 @@ end, { desc = 'Search: LibGen', silent = true })
 
 -- <leader>cd → DOI to APA
 vim.keymap.set('n', '<leader>cd', function()
-  local clipboard = vim.fn.getreg '"'
+  local clipboard = clipboard_get()
   if not clipboard or #clipboard == 0 then
     vim.notify('Clipboard is empty.', vim.log.levels.WARN)
     return
