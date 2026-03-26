@@ -1281,7 +1281,7 @@ require('lazy').setup({
         else
           vim.o.guifont = 'DejaVuSansM Nerd Font,Adwaita Mono,Noto Sans CJK JP:h11'
         end
-        vim.g.neovide_opacity = 0.9
+        vim.g.neovide_opacity = 1
         -- vim.g.neovide_padding_top = 12
         vim.g.neovide_cursor_short_animation_length = 0.04
       end
