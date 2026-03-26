@@ -9,6 +9,12 @@ while true; do
 	declare -A file_map
 	i=1
 
+	if ! curl -s --head  --request GET localhost:8888 > /dev/null; then
+		termux-wake-lock
+		source ~/.opt/searxng/venv/bin/activate
+		python ~/.opt/searxng/searx/webapp.py > /dev/null 2>&1 &
+	fi
+
 	while IFS= read -r -d '' file; do
 		filename=$(basename "$file")
 		options+=("$i" "$filename") # Add tag and item as separate array elements
@@ -21,6 +27,8 @@ while true; do
 		echo "No executable scripts found in $HOME/.local/bin."
 		break
 	fi
+
+	clear
 
 	CHOICE=$(dialogSelect "Termux" "Choose a Script:" "${options[@]}")
 
