@@ -94,6 +94,25 @@ fi
 unset __conda_setup
 
 # ┌─────┐
+# │ nnn │
+# └─────┘
+
+nds() {
+    [ "${NNNLVL:-0}" -eq 0 ] || {
+        echo "nnn is already running"
+        return
+    }
+    export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+    command nnn "$@"
+    NNN_RETURN_DIR=""
+    [ ! -f "$NNN_TMPFILE" ] || {
+        . "$NNN_TMPFILE"
+        NNN_RETURN_DIR="$PWD"
+        rm -f -- "$NNN_TMPFILE" >/dev/null
+    }
+}
+
+# ┌─────┐
 # │ fzf │
 # └─────┘
 
