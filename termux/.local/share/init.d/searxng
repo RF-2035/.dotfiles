@@ -1,0 +1,59 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          searxng
+# Required-Start:    $network $local_fs
+# Required-Stop:     $network $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: SearXNG search engine
+### END INIT INFO
+
+SEARX_DIR="${HOME}/.opt/searxng"
+SEARX_PID_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/searxng.pid"
+
+start() {
+	if curl -s --head --request GET localhost:8888 >/dev/null 2>&1; then
+		echo "SearXNG is already running."
+	else
+		echo "Starting SearXNG..."
+		termux-wake-lock
+		source ${SEARX_DIR}/venv/bin/activate
+		python ${SEARX_DIR}/searx/webapp.py >/dev/null 2>&1 &
+		echo $! >"${SEARX_PID_FILE}"
+		echo "SearXNG started."
+	fi
+}
+
+stop() {
+	if [ -f "${SEARX_PID_FILE}" ]; then
+		kill $(cat "${SEARX_PID_FILE}") 2>/dev/null
+		rm -f "${SEARX_PID_FILE}"
+		echo "SearXNG stopped."
+	elif pgrep -f 'python.*searx/webapp.py' >/dev/null; then
+		pkill -f 'python.*searx/webapp.py'
+		echo "SearXNG stopped (via pkill)."
+	else
+		echo "SearXNG is not running."
+	fi
+}
+
+status() {
+	if curl -s --head --request GET localhost:8888 >/dev/null 2>&1; then
+		echo "SearXNG is running."
+	else
+		echo "SearXNG is stopped."
+	fi
+}
+
+case "$1" in
+start) start ;;
+stop) stop ;;
+restart)
+	stop
+	sleep 2
+	start
+	;;
+status) status ;;
+*) echo "Usage: $0 {start|stop|restart|status}" ;;
+esac
