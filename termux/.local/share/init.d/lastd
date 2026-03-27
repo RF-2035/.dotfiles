@@ -9,7 +9,7 @@
 # Short-Description: Save and restore last directory
 # ### END INIT INFO
 
-LASTD_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/termux/.lastd"
+LASTD_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/.lastd"
 
 start() {
 	if [ -f "$LASTD_FILE" ]; then

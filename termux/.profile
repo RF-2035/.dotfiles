@@ -1,20 +1,13 @@
-nds() {
-	[ "${NNNLVL:-0}" -eq 0 ] || {
-		echo "nnn is already running"
-		return
-	}
-	export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-	command nnn "$@"
-	NNN_RETURN_DIR=""
-	[ ! -f "$NNN_TMPFILE" ] || {
-		. "$NNN_TMPFILE"
-		NNN_RETURN_DIR="$PWD"
-		rm -f -- "$NNN_TMPFILE" >/dev/null
-	}
-}
-
 dialogSelect() {
 	dialog --title "$1" --extra-button --extra-label "$2" --menu "$3" 15 50 5 "${@:4}" 2>&1 >/dev/tty
+}
+
+dialogMsg() {
+	dialog --title "$1" --msgbox "$2" 8 50
+}
+
+dialogChangeDir() {
+	dialog --title "$1" --dselect "$PWD/" 15 50 2>&1 >/dev/tty
 }
 
 # --------------------------------------
@@ -62,7 +55,7 @@ while true; do
 
 	clear
 
-	CHOICE=$(dialogSelect "Termux" "Change Dir..." "${PWD}:" "${options[@]}")
+	CHOICE=$(dialogSelect "Termux" "CD..." "${PWD}:" "${options[@]}")
 	DIALOG_EXIT_CODE=$?
 
 	clear
@@ -75,9 +68,13 @@ while true; do
 		fi
 		;;
 	3)
-		nds
-		if [ -n "$NNN_RETURN_DIR" ]; then
-			${XDG_DATA_HOME}/init.d/lastd save "$NNN_RETURN_DIR" >/dev/null
+		NEW_DIR=$(dialogChangeDir "Select Directory")
+		DSELECT_EXIT_CODE=$?
+		if [ $DSELECT_EXIT_CODE -eq 0 ] && [ -n "$NEW_DIR" ] && [ -d "$NEW_DIR" ]; then
+			cd "$NEW_DIR" || dialogMsg "Failed to change directory."
+			if [ -x "${XDG_DATA_HOME}/init.d/lastd" ]; then
+				"${XDG_DATA_HOME}/init.d/lastd" save "$NEW_DIR" >/dev/null 2>&1
+			fi
 		fi
 		;;
 	*)
