@@ -1,3 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-proot-distro login ubuntu --user nora --shared-tmp -- /bin/bash -c "cd ${PWD} && nvim"
+getPWD() {
+	REAL_PWD=$(pwd -P)
+	ROOTFS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu"
+	if [[ "$REAL_PWD" == "$ROOTFS_PATH"* ]]; then
+		GUEST_PWD="${REAL_PWD#$ROOTFS_PATH}"
+		GUEST_PWD="${GUEST_PWD:-/}"
+	else
+		GUEST_PWD="$PWD"
+	fi
+	echo "$GUEST_PWD"
+}
+
+proot-distro login ubuntu --user nora --shared-tmp -- /bin/bash -c "cd '$(getPWD)' && nvim"

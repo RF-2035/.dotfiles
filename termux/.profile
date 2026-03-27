@@ -10,6 +10,18 @@ dialogChangeDir() {
 	dialog --title "$1" --dselect "$PWD/" 15 50 2>&1 >/dev/tty
 }
 
+getPWD() {
+	REAL_PWD=$(pwd -P)
+	ROOTFS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu"
+	if [[ "$REAL_PWD" == "$ROOTFS_PATH"* ]]; then
+		GUEST_PWD="${REAL_PWD#$ROOTFS_PATH}"
+		GUEST_PWD="${GUEST_PWD:-/}"
+	else
+		GUEST_PWD="$PWD"
+	fi
+	echo "$GUEST_PWD"
+}
+
 # --------------------------------------
 
 # ┌──────────┐
@@ -55,7 +67,7 @@ while true; do
 
 	clear
 
-	CHOICE=$(dialogSelect "Termux" "CD..." "${PWD}:" "${options[@]}")
+	CHOICE=$(dialogSelect "Termux" "Path.." "$(getPWD):" "${options[@]}")
 	DIALOG_EXIT_CODE=$?
 
 	clear
@@ -68,13 +80,15 @@ while true; do
 		fi
 		;;
 	3)
-		NEW_DIR=$(dialogChangeDir "Select Directory")
+		NEW_DIR=$(dialogChangeDir "Select Path")
 		DSELECT_EXIT_CODE=$?
 		if [ $DSELECT_EXIT_CODE -eq 0 ] && [ -n "$NEW_DIR" ] && [ -d "$NEW_DIR" ]; then
-			cd "$NEW_DIR" || dialogMsg "Failed to change directory."
+			cd "$NEW_DIR" || dialogMsg "Failed to Change Path" "$NEW_DIR"
 			if [ -x "${XDG_DATA_HOME}/init.d/lastd" ]; then
 				"${XDG_DATA_HOME}/init.d/lastd" save "$NEW_DIR" >/dev/null 2>&1
 			fi
+		elif [ $DSELECT_EXIT_CODE -eq 0 ]; then
+			dialogMsg "Invalid Path" "$NEW_DIR"
 		fi
 		;;
 	*)
