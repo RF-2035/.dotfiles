@@ -14,7 +14,6 @@ LASTD_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/.lastd"
 start() {
 	if [ -f "$LASTD_FILE" ]; then
 		. "$LASTD_FILE"
-		rm -f "$LASTD_FILE"
 		echo "Restored directory: $PWD"
 	else
 		echo "No saved directory found."
