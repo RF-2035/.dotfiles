@@ -3,9 +3,12 @@
 getPWD() {
 	REAL_PWD=$(pwd -P)
 	ROOTFS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu"
+	SDCARD_PATH="/storage/emulated/0"
 	if [[ "$REAL_PWD" == "$ROOTFS_PATH"* ]]; then
 		GUEST_PWD="${REAL_PWD#$ROOTFS_PATH}"
 		GUEST_PWD="${GUEST_PWD:-/}"
+	elif [[ "$REAL_PWD" == "$SDCARD_PATH"* ]]; then
+		GUEST_PWD="${REAL_PWD}"
 	else
 		GUEST_PWD="$PWD"
 	fi
