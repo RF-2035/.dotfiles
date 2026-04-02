@@ -10,7 +10,11 @@
 --  │ install the dependencies:                                                │
 --  │   - pacman -S neovim git base-devel stow yarn nnn fzf lazygit tmux       │
 --  │   - git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si │
---  │   - yay -S pandoc-bin gemini-cli-live-bin                                │
+--  │   - yay -S pandoc-bin                                                    │
+--  │                                                                          │
+--  │ install node modules:                                                    │
+--  │   - npm install --prefix ~/.opt/gemini -g @google/gemini-cli             │
+--  │   - ln -s ~/.opt/gemini/bin/gemini ~/.local/bin/gemini                   │
 --  │                                                                          │
 --  │ apply the config:                                                        │
 --  │   - git clone https://github.com/RF-2035/.dotfiles.git ~/.dotfiles       │
