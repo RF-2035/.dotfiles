@@ -35,16 +35,6 @@ in Settings
 
 */
 
-#main-window[titlepreface*="◌ "] #TabsToolbar {
-	height: 0px !important;
-	min-height: 0px !important;
-	max-height: 0px !important;
-}
-
-#main-window[titlepreface*="◌ "] #TabsToolbar .tabbrowser-tab {
-	display: none !important;
-}
-
 /* Hide Sidebar Header
 
 Bookmarks - Ctrl + B
@@ -61,16 +51,10 @@ Sidebery - Ctrl + E
 	min-width: 1.5px !important;
 }
 
-/* Hide Tab bar with only one Tab */
-:root:has(#tabbrowser-tabs .tabbrowser-tab:only-of-type) {
+/* Hide Tab Bar when sidebery is open / only one tab is open */
+:root:has(#tabbrowser-tabs .tabbrowser-tab:only-of-type),
+#main-window[titlepreface*="◌ "] {
 	& #TabsToolbar {
 		display: none !important;
-	}
-
-	& #titlebar,
-	& #toolbar-menubar {
-		& .titlebar-buttonbox-container {
-			display: none !important;
-		}
 	}
 }
