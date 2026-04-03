@@ -1281,9 +1281,9 @@ require('lazy').setup({
         vim.o.titlestring = '%t - Neovide'
         -- using adwaita mono as braille fallback (for mini.map)
         if vim.fn.has 'win32' == 1 then
-          vim.o.guifont = 'DejaVuSansM Nerd Font,Noto Sans CJK JP:h11'
+          vim.o.guifont = 'Iosevka Nerd Font,Noto Sans CJK JP:h11'
         else
-          vim.o.guifont = 'DejaVuSansM Nerd Font,Adwaita Mono,Noto Sans CJK JP:h11'
+          vim.o.guifont = 'Iosevka Nerd Font,Adwaita Mono,Noto Sans CJK JP:h11'
         end
         vim.g.neovide_opacity = 1
         -- vim.g.neovide_padding_top = 12
