@@ -60,3 +60,17 @@ Sidebery - Ctrl + E
 	width: 1.5px !important;
 	min-width: 1.5px !important;
 }
+
+/* Hide Tab bar with only one Tab */
+:root:has(#tabbrowser-tabs .tabbrowser-tab:only-of-type) {
+	& #TabsToolbar {
+		display: none !important;
+	}
+
+	& #titlebar,
+	& #toolbar-menubar {
+		& .titlebar-buttonbox-container {
+			display: none !important;
+		}
+	}
+}
