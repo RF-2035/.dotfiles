@@ -288,6 +288,7 @@ reverse_bopomofo:
   preedit_format:
     - xform/^o(lf|bh|cj|vy)//
     - "xlit|1qaz2wsxedcrfv5tgbyhnujm8ik,9ol.0p;/- 6347'|ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄧㄨㄩㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦˉˊˇˋ˙ |"
+  __include: reverse_format
 
 reverse_tick:
   __include: reverse_zrlf
@@ -383,6 +384,7 @@ moran:
     enable: true       # 是否啓用單字的出簡讓全？
     #defer: 5          # 延遲多少位？若不設置该项，或值小於等於 0，則推遲到第二頁的首選
     show_hint: true    # 若讓全，則提示簡碼打法
+    suffix: "o"        # YYXX + suffix 的單字碼會被讓全；如果常用 / 輸入單字，可改爲 "/"
 
     # 詞語級「讓全」，對二、三、四字詞有效
     # 例：假設 lmjx 的輸出是 1.連接 2.鏈接
@@ -415,8 +417,8 @@ moran:
   quick_code_hint_skip_chars: false
 
   # 輸入四碼時，如果簡碼碼表中含有對應條目，則放置在第二選項。
-  inject_fixed_chars: true   # 是否輸出簡碼碼表單字，例：輸入 jwrg 時，次選爲「佳」
-  inject_fixed_words: false    # 是否輸出簡碼碼表詞語，例：輸入 lmsd 時，次選爲「兩面三刀」
+  inject_fixed_chars: true    # 是否輸出簡碼碼表單字，例：輸入 jwrg 時，次選爲「佳」
+  inject_fixed_words: false   # 是否輸出簡碼碼表詞語，例：輸入 lmsd 時，次選爲「兩面三刀」
   # (僅*動詞模式*) 是否優先輸出單字或詞組
   inject_prioritize: "any"    # char 優先單字, word 優先詞組，其他取值理解爲按碼表順序
 
