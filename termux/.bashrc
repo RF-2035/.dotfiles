@@ -1,0 +1,89 @@
+# ┌───────────┐
+# │ ~/.bashrc │
+# └───────────┘
+
+if [[ -n "$TERMUX_VERSION" ]]; then
+    _BIN_PATH="$PREFIX/bin"
+    _SHARE_PATH="$PREFIX/share"
+    _ETC_PATH="$PREFIX/etc"
+else
+    _BIN_PATH="/usr/bin"
+    _SHARE_PATH="/usr/share"
+    _ETC_PATH="/etc"
+fi
+
+if [ "$EUID" -eq 0 ] && [[ -z "$TERMUX_VERSION" ]]; then
+    _HOME_PATH="/home/$(logname)"
+else
+    _HOME_PATH="$HOME"
+fi
+
+export PATH="${_HOME_PATH}/.local/bin:$PATH"
+
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+
+export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
+
+export SHELL="${_BIN_PATH}/bash"
+export EDITOR="${_BIN_PATH}/nvim"
+export VISUAL="${_BIN_PATH}/nvim"
+
+export NNN_TRASH=1
+
+export QT_STYLE_OVERRIDE=kvantum
+
+if [ "$XDG_SESSION_TYPE" = 'wayland' ]; then
+    export QT_QPA_PLATFORM=wayland
+    export QT_WAYLAND_DECORATION=adwaita
+fi
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# ┌─────────────────┐
+# │ Prompt & Colors │
+# └─────────────────┘
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias diff='diff --color=auto'
+# PS1='[\u@\h \W]\$ '
+# PS1='\[\e[32;1m\]\u@\h: \[\e[36m\]\W\[\e[0m\]\$ '
+PS1='\[\e[38;2;46;194;126;1m\]\u@\h: \[\e[38;2;10;185;220;1m\]\W\[\e[0m\]\$ '
+
+# ┌───────────────┐
+# │ Shell Options │
+# └───────────────┘
+#  - autocd - change directory without entering the 'cd' command
+#  - cdspell - automatically fix directory typos when changing directory
+#  - direxpand - automatically expand directory globs when completing
+#  - dirspell - automatically fix directory typos when completing
+#  - globstar - ** recursive glob
+#  - histappend - append to history, don't overwrite
+#  - histverify - expand, but don't automatically execute, history expansions
+#  - nocaseglob - case-insensitive globbing
+#  - no_empty_cmd_completion - do not TAB expand empty lines
+shopt -s autocd cdspell direxpand dirspell globstar histappend histverify \
+    nocaseglob no_empty_cmd_completion
+
+# ┌─────────┐
+# │ History │
+# └─────────┘
+
+export HISTTIMEFORMAT='%s '
+shopt -s histappend
+export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
+
+# ┌─────────────────┐
+# │ bash-completion │
+# └─────────────────┘
+
+if ! shopt -oq posix; then
+    if [ -f "${_SHARE_PATH}/bash-completion/bash_completion" ]; then
+        . "${_SHARE_PATH}/bash-completion/bash_completion"
+    elif [ -f "${_ETC_PATH}/bash_completion" ]; then
+        . "${_ETC_PATH}/bash_completion"
+    fi
+fi
