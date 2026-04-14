@@ -420,14 +420,14 @@ require('lazy').setup({
         suggestion = {
           auto_trigger = true,
           keymap = {
-            -- NOTE: <Tab> → complete, <C-Tab> → dismiss
+            -- NOTE: <Tab> or <C-]> → complete, <C-[> → dismiss
             -- NOTE: <M-]> → next, <M-[> → previous
-            accept = false, -- Handled by Super-tab
+            accept = '<C-]>',
             accept_word = false,
             accept_line = false,
             next = '<M-]>',
             prev = '<M-[>',
-            dismiss = '<C-Tab>',
+            dismiss = '<C-[>',
             toggle_auto_trigger = false,
           },
         },
