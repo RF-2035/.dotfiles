@@ -539,6 +539,39 @@ require('lazy').setup({
     },
   },
 
+  -- ┌──────────────┐
+  -- │ Code Folding │
+  -- └──────────────┘
+  { 'kevinhwang91/promise-async' },
+  {
+    'kevinhwang91/nvim-ufo',
+    dependencies = 'kevinhwang91/promise-async',
+    config = function()
+      require('ufo').setup {
+        provider_selector = function(bufnr, filetype, buftype)
+          return { 'treesitter', 'indent' }
+        end,
+      }
+
+      vim.opt.foldlevel = 99
+      vim.opt.foldlevelstart = 99
+      vim.opt.foldmethod = 'expr'
+      vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+
+      -- NOTE: <leader>l, <leader>h → open fold, close fold
+      vim.keymap.set('n', '<leader>l', function()
+        vim.cmd 'normal! zo'
+      end, { desc = 'Fold Open' })
+      vim.keymap.set('n', '<leader>h', function()
+        vim.cmd 'normal! zc'
+      end, { desc = 'Fold Close' })
+
+      -- NOTE: zR, zM → open all folds, close all folds
+      vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
+      vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+    end,
+  },
+
   -- ┌────────────────────────┐
   -- │ Color Picker & Preview │
   -- └────────────────────────┘
@@ -819,7 +852,6 @@ require('lazy').setup({
       spec = {
         { '<leader>s', group = 'Search' },
         { '<leader>t', group = 'Toggle' },
-        { '<leader>h', group = 'Git Hunk', mode = { 'n', 'v' } },
         { '<leader>a', group = 'Assist' },
         { '<leader>b', group = 'Buffer' },
         { '<leader>c', group = 'Commands' },
@@ -1381,13 +1413,22 @@ require('lazy').setup({
   {
     'echasnovski/mini.nvim',
     config = function()
-      -- around/inside
-      require('mini.ai').setup { n_lines = 500 }
+      -- ┌──────────────────┐
+      -- │ mini.indentscope │
+      -- └──────────────────┘
+      -- this setting fits vim.o.foldmethod='expr' vim.o.foldexpr='v:lua.vim.treesitter.foldexpr()'
+      local indentscope = require 'mini.indentscope'
+      indentscope.setup {
+        options = {
+          indent_at_cursor = false,
+          try_as_border = true,
+        },
+        symbol = '▏',
+      }
 
-      -- surround
-      -- require('mini.surround').setup()
-
-      -- map
+      -- ┌──────────┐
+      -- │ mini.map │
+      -- └──────────┘
       local minimap = require 'mini.map'
       minimap.setup {
         integrations = {
@@ -1405,29 +1446,66 @@ require('lazy').setup({
         },
       }
 
+      local map_source_win = nil
+      local view_file = vim.fn.stdpath 'state' .. '/minimap_toggle_view.vim'
+
+      local function save_view()
+        map_source_win = vim.api.nvim_get_current_win()
+        local original_vop = vim.o.viewoptions
+        vim.o.viewoptions = 'folds'
+        vim.cmd('silent! mkview! ' .. vim.fn.fnameescape(view_file))
+        vim.o.viewoptions = original_vop
+        vim.cmd 'normal! zR'
+      end
+
+      local function restore_view()
+        if map_source_win and vim.api.nvim_win_is_valid(map_source_win) then
+          vim.api.nvim_win_call(map_source_win, function()
+            local target_pos = vim.api.nvim_win_get_cursor(0)
+            local original_vop = vim.o.viewoptions
+            vim.o.viewoptions = 'folds'
+            vim.cmd('silent! source ' .. vim.fn.fnameescape(view_file))
+            vim.o.viewoptions = original_vop
+            pcall(vim.api.nvim_win_set_cursor, 0, target_pos)
+            vim.cmd 'normal! zvzz^'
+          end)
+        end
+        map_source_win = nil
+      end
+
       -- NOTE: <leader>m → minimap
       vim.keymap.set('n', '<leader>m', function()
-        minimap.toggle()
-        vim.schedule(function()
-          minimap.toggle_focus()
-        end)
+        local is_open = minimap.current.win_data[vim.api.nvim_get_current_tabpage()] ~= nil
+        if is_open then
+          minimap.close()
+          restore_view()
+        else
+          save_view()
+          minimap.open()
+          vim.schedule(function()
+            minimap.toggle_focus()
+          end)
+        end
       end, { desc = 'Map', silent = true })
 
-      -- NOTE: in minimap, q or focus loss → close minimap
+      -- NOTE: in minimap, q or focus loss → close minimap and restore folds
       vim.api.nvim_create_autocmd('FileType', {
         pattern = 'minimap',
-        callback = function()
+        callback = function(args)
           vim.keymap.set('n', 'q', function()
             minimap.close()
-          end, { buffer = true, desc = 'Close', silent = true })
+            vim.schedule(restore_view)
+          end, { buffer = args.buf, desc = 'Close', silent = true })
         end,
       })
       vim.api.nvim_create_autocmd('WinLeave', {
         group = vim.api.nvim_create_augroup('MiniMapAutoClose', { clear = true }),
         callback = function()
-          local buf_name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(vim.api.nvim_get_current_win()))
+          local cur_win = vim.api.nvim_get_current_win()
+          local buf_name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(cur_win))
           if buf_name:match 'minimap://' then
             minimap.close()
+            vim.schedule(restore_view)
           end
         end,
       })
