@@ -659,6 +659,9 @@ require('lazy').setup({
         trash = {
           cmd = 'trash-put',
         },
+        filters = {
+          git_ignored = false,
+        },
       }
 
       -- NOTE: <leader>e → Explorer
@@ -1317,7 +1320,7 @@ require('lazy').setup({
         else
           vim.o.guifont = 'Iosevka Nerd Font,Adwaita Mono,Noto Sans CJK JP:h11'
         end
-        vim.g.neovide_opacity = 1
+        vim.g.neovide_opacity = 0.9
         -- vim.g.neovide_padding_top = 12
         vim.g.neovide_cursor_short_animation_length = 0.04
       end
@@ -1443,6 +1446,7 @@ require('lazy').setup({
         window = {
           focusable = true,
           side = 'right',
+          width = 15,
         },
       }
 
@@ -1498,6 +1502,7 @@ require('lazy').setup({
           end, { buffer = args.buf, desc = 'Close', silent = true })
         end,
       })
+
       vim.api.nvim_create_autocmd('WinLeave', {
         group = vim.api.nvim_create_augroup('MiniMapAutoClose', { clear = true }),
         callback = function()
