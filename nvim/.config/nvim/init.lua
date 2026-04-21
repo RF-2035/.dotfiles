@@ -100,11 +100,38 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 -- NOTE: CTRL+<LeftMouse> → move cursor to clicked position and run gx
 
+local function sanitize_link_for_path(link)
+  local path_str = link
+  path_str = path_str:gsub('^https?://', '')
+  path_str = path_str:gsub('[?#].*$', '')
+  path_str = path_str:gsub('^/*', ''):gsub('/*$', '')
+  path_str = path_str:gsub('[%*:<>%?|]', '_')
+  return path_str
+end
+
 vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '<C-LeftMouse>', function()
   local mouse_pos = vim.fn.getmousepos()
   vim.api.nvim_win_set_cursor(0, { mouse_pos.line, mouse_pos.column - 1 })
-  vim.ui.open(vim.fn.expand '<cfile>')
-end, { desc = 'Go to file under cursor (Ctrl + Left Mouse)' })
+  local cfile = vim.fn.expand '<cfile>'
+  if not cfile or cfile == '' then
+    return
+  end
+  if cfile:match '^https?://' then
+    local sanitized = sanitize_link_for_path(cfile)
+    local md_path = './references/' .. sanitized .. '.md'
+    local pdf_path = './references/' .. sanitized .. '.pdf'
+    local uv = vim.uv or vim.loop
+    if uv.fs_stat(md_path) then
+      vim.cmd('edit ' .. vim.fn.fnameescape(md_path))
+    elseif uv.fs_stat(pdf_path) then
+      vim.ui.open(pdf_path)
+    else
+      vim.ui.open(cfile)
+    end
+  else
+    vim.ui.open(cfile)
+  end
+end, { desc = 'Go to local reference or file under cursor (Ctrl + Left Mouse)' })
 
 -- NOTE: CTRL+<Insert> → copy to clipboard
 
