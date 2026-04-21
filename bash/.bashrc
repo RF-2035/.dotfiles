@@ -50,8 +50,8 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias diff='diff --color=auto'
 # PS1='[\u@\h \W]\$ '
-# PS1='\[\e[32;1m\]\u@\h: \[\e[36m\]\W\[\e[0m\]\$ '
-PS1='\[\e[38;2;46;194;126;1m\]\u@\h: \[\e[38;2;10;185;220;1m\]\W\[\e[0m\]\$ '
+# PS1='\[\e[38;2;46;194;126;1m\]\u@\h: \[\e[38;2;10;185;220;1m\]\W\[\e[0m\]\$ '
+PS1='\[\e[32;1m\]\u@\h: \[\e[36m\]\W\[\e[0m\]\$ '
 
 # ┌───────────────┐
 # │ Shell Options │
