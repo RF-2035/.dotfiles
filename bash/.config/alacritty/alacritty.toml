@@ -9,28 +9,31 @@ history = 100000
 [font]
 normal = { family = 'Iosevka Nerd Font', style = 'Regular' }
 
+[colors]
+transparent_background_colors = true
+
 [colors.primary]
-background = '#f8f8f8'
-foreground = '#2a2b33'
+background = '#ffffff'
+foreground = '#1d1d20'
 
 [colors.normal]
-black   = '#000000'
-red     = '#de3d35'
-green   = '#3e953a'
-yellow  = '#d2b67b'
-blue    = '#2f5af3'
-magenta = '#a00095'
-cyan    = '#3e953a'
-white   = '#bbbbbb'
+black   = '#1d1d20'
+red     = '#c01c28'
+green   = '#26a269'
+yellow  = '#a2734c'
+blue    = '#12488b'
+magenta = '#a347ba'
+cyan    = '#2aa1b3'
+white   = '#cfcfcf'
 
 [colors.bright]
-black   = '#000000'
-red     = '#de3d35'
-green   = '#3e953a'
-yellow  = '#d2b67b'
-blue    = '#2f5af3'
-magenta = '#a00095'
-cyan    = '#3e953a'
+black   = '#5d5d5d'
+red     = '#f66151'
+green   = '#33d17a'
+yellow  = '#e9ad0c'
+blue    = '#2a7bde'
+magenta = '#c061cb'
+cyan    = '#33c7de'
 white   = '#ffffff'
 
 [bell]
