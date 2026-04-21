@@ -36,7 +36,7 @@ export QT_STYLE_OVERRIDE=kvantum
 
 if [ "$XDG_SESSION_TYPE" = 'wayland' ]; then
     export QT_QPA_PLATFORM=wayland
-    # export QT_WAYLAND_DECORATION=adwaita
+    export QT_WAYLAND_DECORATION=adwaita
 fi
 
 # If not running interactively, don't do anything
