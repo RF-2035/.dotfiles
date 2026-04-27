@@ -18,6 +18,17 @@ else
     _HOME_PATH="$HOME"
 fi
 
+if [[ -d "/opt/cuda/bin" ]]; then
+    _CUDA_PATH="/opt/cuda"
+elif [[ -d "/usr/local/cuda/bin" ]]; then
+    _CUDA_PATH="/usr/local/cuda"
+fi
+
+if [[ -n "$_CUDA_PATH" ]]; then
+    export PATH="${_CUDA_PATH}/bin:$PATH"
+    export LD_LIBRARY_PATH="${_CUDA_PATH}/lib64:$LD_LIBRARY_PATH"
+fi
+
 export PATH="${_HOME_PATH}/.local/bin:$PATH"
 
 export GTK_IM_MODULE=fcitx
