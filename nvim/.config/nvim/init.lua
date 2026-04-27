@@ -109,6 +109,16 @@ local function sanitize_link_for_path(link)
   return path_str
 end
 
+local function find_local_reference(sanitized_path, ext)
+  local safe_path = vim.fn.escape(sanitized_path, '[]')
+  local pattern = '**/*' .. safe_path .. ext
+  local matches = vim.fn.glob(pattern, true, true)
+  if matches and #matches > 0 then
+    return matches[1]
+  end
+  return nil
+end
+
 vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '<C-LeftMouse>', function()
   local mouse_pos = vim.fn.getmousepos()
   vim.api.nvim_win_set_cursor(0, { mouse_pos.line, mouse_pos.column - 1 })
@@ -118,20 +128,21 @@ vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '<C-LeftMouse>', function()
   end
   if cfile:match '^https?://' then
     local sanitized = sanitize_link_for_path(cfile)
-    local md_path = './references/' .. sanitized .. '.md'
-    local pdf_path = './references/' .. sanitized .. '.pdf'
-    local uv = vim.uv or vim.loop
-    if uv.fs_stat(md_path) then
+    local md_path = find_local_reference(sanitized, '.md')
+    if md_path then
       vim.cmd('edit ' .. vim.fn.fnameescape(md_path))
-    elseif uv.fs_stat(pdf_path) then
-      vim.ui.open(pdf_path)
-    else
-      vim.ui.open(cfile)
+      return
     end
+    local pdf_path = find_local_reference(sanitized, '.pdf')
+    if pdf_path then
+      vim.ui.open(pdf_path)
+      return
+    end
+    vim.ui.open(cfile)
   else
     vim.ui.open(cfile)
   end
-end, { desc = 'Go to local reference or file under cursor (Ctrl + Left Mouse)' })
+end, { desc = 'Search for local reference or go to web/file (Ctrl + Left Mouse)' })
 
 -- NOTE: CTRL+<Insert> → copy to clipboard
 
