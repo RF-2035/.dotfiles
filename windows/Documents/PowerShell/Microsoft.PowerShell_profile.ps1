@@ -1,21 +1,52 @@
-Invoke-Expression (&scoop-search --hook)
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH/robbyrussell.omp.json" | Invoke-Expression
+# ┌─────────────────────────────────────────────────────────┐
+# │ ~\Documents\PowerShell\Microsoft.PowerShell_profile.ps1 │
+# └─────────────────────────────────────────────────────────┘
 
+Invoke-Expression (&scoop-search --hook)
 Import-Module -Name CompletionPredictor
 
 Set-PSReadLineOption -PredictionSource HistoryAndPlugin
-# Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -PredictionViewStyle InlineView
 Set-PSReadLineOption -EditMode Windows
 
+function prompt {
+    Write-Host "`e[1;32m$($env:USERNAME)@$($env:COMPUTERNAME): `e[0m" -NoNewline
+    if ($PWD.Path -eq $HOME) {
+        Write-Host "`e[1;36m~`e[0m" -NoNewline
+    } else {
+        Write-Host "`e[1;36m$(Split-Path $PWD -Leaf)`e[0m" -NoNewline
+    }
+    return "$ "
+}
+
+Set-PSReadLineOption -Colors @{
+  Command            = 'Black'
+  Number             = 'DarkGray'
+  Member             = 'DarkGray'
+  Operator           = 'DarkGray'
+  Type               = 'DarkGray'
+  Variable           = 'Darkyellow'
+  Parameter          = 'DarkYellow'
+  ContinuationPrompt = 'DarkGray'
+  Default            = 'DarkGray'
+}
+
+$host.privatedata.ErrorForegroundColor    = "Red"
+$host.privatedata.ErrorBackgroundColor    = "White"
+$host.privatedata.WarningForegroundColor  = "Yellow"
+$host.privatedata.WarningBackgroundColor  = "White"
+$host.privatedata.DebugForegroundColor    = "Yellow"
+$host.privatedata.DebugBackgroundColor    = "White"
+$host.privatedata.VerboseForegroundColor  = "Black"
+$host.privatedata.VerboseBackgroundColor  = "White"
+$host.privatedata.ProgressForegroundColor = "DarkGray"
+$host.privatedata.ProgressBackgroundColor = "White"
+
+$PSStyle.FileInfo.Directory  = $PSStyle.Background.BrightWhite + $PSStyle.Foreground.Black + $PSStyle.Bold
+$PSStyle.FileInfo.Executable = $PSStyle.Background.BrightWhite + $PSStyle.Foreground.Black + $PSStyle.Bold
+
 Set-PSReadLineKeyHandler -Chord "Tab" -Function MenuComplete
 
-Set-Alias lvim 'C:\Users\User\.local\bin\lvim.ps1'
-
-# setup clash meta proxy
-# $env:HTTP_PROXY="http://127.0.0.1:7897"; $env:HTTPS_PROXY="http://127.0.0.1:7897"
-
-# nnn opens msys2 instead of file manager
 function nnn {
     ucrt64
 }
