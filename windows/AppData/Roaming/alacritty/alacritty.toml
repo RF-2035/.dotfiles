@@ -42,3 +42,9 @@ color = "#ffffff"
 
 [terminal]
 shell = "pwsh"
+
+[keyboard]
+bindings = [
+    { key = "C", mods = "Control", chars="\x03" },
+    { key = "V", mods = "Control", chars="\x16" },
+]
