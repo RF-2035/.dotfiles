@@ -10,11 +10,11 @@ Set-PSReadLineOption -PredictionViewStyle InlineView
 Set-PSReadLineOption -EditMode Windows
 
 function prompt {
-    Write-Host "`e[1;32m$($env:USERNAME)@$($env:COMPUTERNAME): `e[0m" -NoNewline
+    $host.UI.RawUI.WindowTitle = "$($PWD.Path.Replace($HOME, "~"))"
     if ($PWD.Path -eq $HOME) {
-        Write-Host "`e[1;36m~`e[0m" -NoNewline
+        Write-Host "`e[32;1m$($env:USERNAME)@$($env:COMPUTERNAME): `e[36m~`e[0m" -NoNewline
     } else {
-        Write-Host "`e[1;36m$(Split-Path $PWD -Leaf)`e[0m" -NoNewline
+        Write-Host "`e[32;1m$($env:USERNAME)@$($env:COMPUTERNAME): `e[36m$(Split-Path $PWD -Leaf)`e[0m" -NoNewline
     }
     return "$ "
 }
