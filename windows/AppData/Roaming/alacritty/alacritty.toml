@@ -7,7 +7,6 @@ history = 100000
 
 [font]
 normal = { family = 'Iosevka Nerd Font', style = 'Regular' }
-size = 11
 
 [colors]
 transparent_background_colors = true
