@@ -47,6 +47,9 @@ $PSStyle.FileInfo.Executable = $PSStyle.Background.BrightWhite + $PSStyle.Foregr
 
 Set-PSReadLineKeyHandler -Chord "Tab" -Function MenuComplete
 
+Remove-PSReadLineKeyHandler -Chord 'Ctrl+c'
+Remove-PSReadLineKeyHandler -Chord 'Ctrl+v'
+
 function nnn {
     ucrt64
 }
