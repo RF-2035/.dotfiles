@@ -678,6 +678,7 @@ require('lazy').setup({
         --   },
         -- },
         renderer = {
+          root_folder_label = vim.fn.has 'win32' == 1 and ':~:s?$?\\\\..?' or ':~:s?$?/..?',
           icons = {
             glyphs = {
               git = {
