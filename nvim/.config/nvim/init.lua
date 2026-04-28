@@ -66,6 +66,9 @@ vim.opt.confirm = true
 vim.opt.title = true
 vim.opt.titlestring = '%t - Nvim'
 
+-- share clipboard
+vim.opt.clipboard = 'unnamedplus'
+
 -- disable shortmess find occurance count (:set shortmess+=S)
 vim.opt.shortmess:append 'S'
 
@@ -1365,6 +1368,7 @@ require('lazy').setup({
 
       -- apply the colorscheme
       vim.cmd 'colorscheme adwaita'
+      vim.o.background = 'light'
 
       -- set terminal colors (ptyxis gnome.palette)
       vim.g.terminal_color_0 = '#1d1d20'
