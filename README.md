@@ -1,4 +1,4 @@
-# dotfiles
+# .dotfiles/
 
 Nora Amita's personal dotfiles. Folders are explained in the following sections.
 
