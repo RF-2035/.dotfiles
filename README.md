@@ -1,12 +1,10 @@
 # dotfiles
 
-Nora Amita's personal dotfiles.
+Nora Amita's personal dotfiles. Folders are explained in the following sections.
 
-## .obsidian
+## .obsidian/
 
-Minimal obsidian configuration, including:
-
-- minimal theme & minimal theme settings
+A minimalist obsidian vault `.obsidian/` configuration.
 
 To use these configs:
 
@@ -14,7 +12,7 @@ To use these configs:
 2. run `stow -t <obsidian_vault_directory>/.obsidian .obsidian` (linux), `dploy stow .obsidian <obsidian_vault_directory>/.obsidian` (windows) or copy the `.obsidian` directory's contents to vault's `.obsidian` manually (android) in the root directory of this repository.
 3. repeat step 1 and 2 whenever a new vault is created.
 
-## bash
+## bash/
 
 Linux CLI configuration, including:
 
@@ -23,14 +21,18 @@ Linux CLI configuration, including:
 
 To use these configs, run `stow bash` in the root directory of this repository.
 
-## firefox
+## firefox/
+
+`chrome/userChrome.css` for a focused firefox ui with sidebery.
 
 To use these configs:
 
 1. find firefox profile directory: ☰ → Help → More troubleshooting information → Profile Directory (usually ending with `default-release`).
 2. run `stow firefox/default-release <profile_directory>` (linux) or `dploy stow firefox\default-release <profile_directory>` (windows) in the root directory of this repository.
 
-## nvim
+## nvim/
+
+Neovim configuration, modified from https://github.com/nvim-lua/kickstart.nvim.
 
 To use these configs, run `stow nvim` (linux) or `dploy stow nvim\.config ~\AppData\Local` in the root directory of this repository, then install dependencies:
 
@@ -43,14 +45,16 @@ To use these configs, run `stow nvim` (linux) or `dploy stow nvim\.config ~\AppD
     ln -s ~/.opt/gemini/bin/gemini ~/.local/bin/gemini
     ```
 
-## rime
+## rime/
+
+Rime configuration, including https://github.com/rimeinn/rime-moran, an improved version of Ziranma
 
 To use these configs:
 
 1. find rime config directory: `~/.local/share/fcitx5/rime` (linux), `~\AppData\Roaming\Rime` (windows) or `/storage/emulated/0/Android/data/org.fcitx.fcitx5.android/files/data/rime` (android).
 2. run `stow rime <rime_config_directory>` (linux), `dploy stow rime <rime_config_directory>` (windows) or copy the `rime` directory's contents to the rime config directory (android) in the root directory of this repository.
 
-## termux
+## termux/
 
 A heavily customized termux configuration, including:
 
