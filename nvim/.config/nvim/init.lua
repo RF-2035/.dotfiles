@@ -150,6 +150,27 @@ vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, '<C-LeftMouse>', function()
   end
 end, { desc = 'Search for local reference or go to web/file (Ctrl + Left Mouse)' })
 
+-- NOTE: gx → try local files first, then gx
+
+vim.keymap.set({ 'n', 'i', 'v', 't', 'c' }, 'gx', function()
+  local cfile = vim.fn.expand '<cfile>'
+  if not cfile or cfile == '' then
+    return
+  end
+  local sanitized = sanitize_link_for_path(cfile)
+  local md_path = find_local_reference(sanitized, '.md')
+  if md_path then
+    vim.cmd('edit ' .. vim.fn.fnameescape(md_path))
+    return
+  end
+  local pdf_path = find_local_reference(sanitized, '.pdf')
+  if pdf_path then
+    vim.ui.open(pdf_path)
+    return
+  end
+  vim.cmd 'normal! gx'
+end, { desc = 'Search for local reference or go to web/file (gx)' })
+
 -- NOTE: CTRL+<Insert> → copy to clipboard
 
 vim.keymap.set({ 'n', 'v' }, '<C-Insert>', '"+y', { desc = 'Copy to clipboard' })
