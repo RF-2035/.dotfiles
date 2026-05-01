@@ -69,6 +69,9 @@ vim.opt.titlestring = '%t - Nvim'
 -- share clipboard
 vim.opt.clipboard = 'unnamedplus'
 
+-- terminal scrollback limit
+vim.opt.scrollback = 100000
+
 -- disable shortmess find occurance count (:set shortmess+=S)
 vim.opt.shortmess:append 'S'
 
