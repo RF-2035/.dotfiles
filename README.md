@@ -77,9 +77,9 @@ To use these configs, clone this repository to ubuntu proot-distro home, **exit 
     stow -t ~ termux
     ```
 
-## windows
+## windows/
 
-Windows configuarion, including:
+A linux user's windows configuarion, including:
 
 - configs for pwsh, psmux & alacritty
 - an autohotkey script ~\\.ahk
