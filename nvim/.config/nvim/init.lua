@@ -1443,6 +1443,11 @@ require('lazy').setup({
           min_vertical_distance_smear = 2,
         }
       end
+      -- <leader>ts → toggle smear cursor
+      vim.keymap.set('n', '<leader>ts', function()
+        require('smear_cursor').enabled = not require('smear_cursor').enabled
+        vim.notify(require('smear_cursor').enabled and 'Smear cursor: enabled' or 'Smear cursor: disabled', vim.log.levels.INFO)
+      end, { desc = 'Smear', silent = true })
     end,
   },
 
