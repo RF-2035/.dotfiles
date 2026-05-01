@@ -1,1 +1,5 @@
+# .obsidian
+/.obsidian/workspace.json
+
+# nvim
 /nvim/.config/nvim/lazy-lock.json
