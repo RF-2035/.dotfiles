@@ -11,7 +11,11 @@ import_tables:
   - moran.base       # 基礎詞庫
   - moran.words      # 本方案補充詞
   - moran.tencent    # 騰訊詞庫
+  - moran.chemicals  # 化學品名
+  - moran.chemistry  # 化學術語
   - moran.computer   # 計算機術語
+  - moran.gushiwen   # 古文詞庫
+  - moran.math       # 數學術語
   - moran.moe
 ...
 
