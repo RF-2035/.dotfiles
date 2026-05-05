@@ -28,7 +28,7 @@ To use these configs, run `stow bash` in the root directory of this repository.
 To use these configs:
 
 1. find firefox profile directory: ☰ → Help → More troubleshooting information → Profile Directory (usually ending with `default-release`).
-2. run `stow firefox/default-release <profile_directory>` (linux) or `dploy stow firefox\default-release <profile_directory>` (windows) in the root directory of this repository.
+2. run `stow -t <profile_directory> firefox/default-release` (linux) or `dploy stow firefox\default-release <profile_directory>` (windows) in the root directory of this repository.
 
 ## nvim/
 
@@ -52,7 +52,7 @@ Rime configuration, including https://github.com/rimeinn/rime-moran, an improved
 To use these configs:
 
 1. find rime config directory: `~/.local/share/fcitx5/rime` (linux), `~\AppData\Roaming\Rime` (windows) or `/storage/emulated/0/Android/data/org.fcitx.fcitx5.android/files/data/rime` (android).
-2. run `stow rime <rime_config_directory>` (linux), `dploy stow rime <rime_config_directory>` (windows) or copy the `rime` directory's contents to the rime config directory (android) in the root directory of this repository.
+2. run `stow -t <rime_config_directory> rime` (linux), `dploy stow rime <rime_config_directory>` (windows) or copy the `rime` directory's contents to the rime config directory (android) in the root directory of this repository.
 
 ## termux/
 
