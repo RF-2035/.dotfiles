@@ -133,7 +133,19 @@ rebootWindows() {
 		dialogMsg "Error" "Windows boot entry not found."
 		return
 	fi
-	pkexec sh -c "grub-reboot '$WINDOWS_ENTRY' && reboot"
+	local output=$(pkexec sh -c "grub-reboot '$WINDOWS_ENTRY' && grub-editenv list")
+	local status=$(echo "$output" | grep "next_entry" | cut -d= -f2)
+	if [ -z "$status" ]; then
+		dialogYesNo "  :  (not found)" "Reconfigure grub?"
+		if [ $? -eq 0 ]; then
+			pkexec sh -c "grub-mkconfig -o /boot/grub/grub.cfg"
+		fi
+	else
+		dialogYesNo "  :  $status" "Restart now?"
+		if [ $? -eq 0 ]; then
+			systemctl reboot
+		fi
+	fi
 }
 
 # --------------------------------------
