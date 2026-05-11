@@ -141,7 +141,7 @@ rebootWindows() {
 			pkexec sh -c "grub-mkconfig -o /boot/grub/grub.cfg"
 		fi
 	else
-		dialogYesNo "  :  $status" "Restart now?"
+		dialogYesNo "  :  $status" "Reboot now?"
 		if [ $? -eq 0 ]; then
 			systemctl reboot
 		fi
