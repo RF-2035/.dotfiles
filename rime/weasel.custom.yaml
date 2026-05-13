@@ -1,0 +1,30 @@
+customization:
+  distribution_code_name: Weasel
+  distribution_version: 0.17.4
+  generator: "Weasel::UIStyleSettings"
+  modified_time: "Tue Dec 23 22:33:40 2025"
+  rime_version: 1.13.1
+patch:
+  "show_notifications": false
+  "style/color_scheme": nord
+  "style/comment_font_point": 14
+  "style/font_point": 14
+  "style/horizontal": true
+  "style/label_font_point": 14
+  "style/layout/border_width": 1
+  "style/layout/candidate_spacing": 7
+  "style/layout/hilite_padding": 7
+  "style/layout/margin_x": 0
+  "style/layout/margin_y": 0
+  "style/layout/spacing": 0
+  "preset_color_schemes/mac":
+    name: 碧水／Aqua
+    author: 佛振 <chen.sst@gmail.com>
+    text_color: 0x606060
+    back_color: 0xeeeceeee
+    candidate_text_color: 0x000000
+    hilited_text_color: 0x000000
+    hilited_candidate_text_color: 0xffffff
+    hilited_candidate_back_color: 0xeefa3a0a
+    comment_text_color: 0x5a5a5a
+    hilited_comment_text_color: 0xfcac9d
