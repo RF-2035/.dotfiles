@@ -9,15 +9,25 @@ Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 Set-PSReadLineOption -PredictionViewStyle InlineView
 Set-PSReadLineOption -EditMode Windows
 
+# ┌────────────────┐
+# │ Title & Prompt │
+# └────────────────┘
+
 function prompt {
+    $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    $isHome = $PWD.Path -eq $HOME
+
+    $user = if ($isAdmin) { "root" } else { $env:USERNAME }
+    $folder = if ($isHome) { "~" } else { Split-Path $PWD -Leaf }
+    $handle = if ($isAdmin) { "# " } else { "$ " }
+
     $host.UI.RawUI.WindowTitle = "$($PWD.Path.Replace($HOME, "~"))"
-    if ($PWD.Path -eq $HOME) {
-        Write-Host "`e[32;1m$($env:USERNAME)@$($env:COMPUTERNAME): `e[36m~`e[0m" -NoNewline
-    } else {
-        Write-Host "`e[32;1m$($env:USERNAME)@$($env:COMPUTERNAME): `e[36m$(Split-Path $PWD -Leaf)`e[0m" -NoNewline
-    }
-    return "$ "
+    return "`e[32;1m${user}@$($env:COMPUTERNAME): `e[36m${folder}`e[0m${handle}"
 }
+
+# ┌──────────────────────┐
+# │ Colors (Light Theme) │
+# └──────────────────────┘
 
 Set-PSReadLineOption -Colors @{
   Command            = 'Black'
@@ -45,10 +55,18 @@ $host.privatedata.ProgressBackgroundColor = "White"
 $PSStyle.FileInfo.Directory  = $PSStyle.Background.BrightWhite + $PSStyle.Foreground.Black + $PSStyle.Bold
 $PSStyle.FileInfo.Executable = $PSStyle.Background.BrightWhite + $PSStyle.Foreground.Black + $PSStyle.Bold
 
+# ┌─────────┐
+# │ Keymaps │
+# └─────────┘
+
 Set-PSReadLineKeyHandler -Chord "Tab" -Function MenuComplete
 
 Remove-PSReadLineKeyHandler -Chord 'Ctrl+c'
 Remove-PSReadLineKeyHandler -Chord 'Ctrl+v'
+
+# ┌───────────┐
+# │ Shortcuts │
+# └───────────┘
 
 function nnn {
     ucrt64
