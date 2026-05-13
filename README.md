@@ -31,10 +31,10 @@ Linux CLI configuration, including:
 To use these configs in linux:
 
 ```bash
-mkdir -p ~/.local/bin ~/.local/share/applications ~/.config
+mkdir -p ~/.local/bin ~/.local/share/applications ~/.config ~/.config/musikcube
 stow linux
 
-sudo mkdir -p /root/.local/bin /root/.local/share/applications /root/.config
+sudo mkdir -p /root/.local/bin /root/.local/share/applications /root/.config /root/.config/musikcube
 sudo stow -t /root linux
 ```
 
@@ -112,4 +112,14 @@ A linux user's windows configuarion, including:
 - configs for pwsh, psmux & alacritty
 - an autohotkey script ~\\.ahk
 
-To use these configs, `pip install dploy` and run `dploy stow windows ~` in the root directory of this repository.
+To use these configs in windows:
+
+```pwsh
+scoop install pipx
+
+pipx ensurepath
+pipx install dploy
+
+mkdir $env:APPDATA\musikcube
+dploy stow windows $env:USERPROFILE
+```
