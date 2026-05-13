@@ -9,7 +9,7 @@ A minimalist obsidian vault `.obsidian/` configuration.
 To use these configs:
 
 1. find or create `<obsidian_vault_directory>/.obsidian/`, delete all but `workspace.json` under it.
-2. run `stow -t <obsidian_vault_directory>/.obsidian .obsidian` (linux), `dploy stow .obsidian <obsidian_vault_directory>/.obsidian` (windows) or copy the `.obsidian` directory's contents to vault's `.obsidian` manually (android).
+2. run `stow -t <obsidian_vault_directory>/.obsidian .obsidian` (linux), `dploy stow .obsidian <obsidian_vault_directory>\.obsidian` (windows) or copy the `.obsidian` directory's contents to vault's `.obsidian` manually (android).
 3. repeat step 1 and 2 whenever a new vault is created.
 
 ## firefox/
@@ -59,17 +59,29 @@ sudo ln -s ~/.dotfiles/nvim /root/.config/nvim
 To use these configs in windows:
 
 ```powershell
-New-Item -ItemType SymbolicLink -Path $env:LOCALAPPDATA\nvim -Target ~\.dotfiles\nvim
+New-Item -ItemType SymbolicLink -Path $env:LOCALAPPDATA\nvim -Target $env:USERPROFILE\.dotfiles\nvim
 ```
 
 ## rime/
 
 Rime configuration, including https://github.com/rimeinn/rime-moran, an improved version of Ziranma
 
-To use these configs:
+To use these configs in linux:
 
-1. find or create `<rime_config_directory>`: `~/.local/share/fcitx5/rime` (linux), `~\AppData\Roaming\Rime` (windows) or `/storage/emulated/0/Android/data/org.fcitx.fcitx5.android/files/data/rime` (android).
-2. run `stow -t <rime_config_directory> rime` (linux), `dploy stow rime <rime_config_directory>` (windows) or copy the `rime` directory's contents to the rime config directory (android) in the root directory of this repository.
+```bash
+ln -s ~/.dotfiles/rime ~/.local/share/fcitx5/rime
+```
+
+To use these configs in windows:
+
+```pwsh
+New-Item -ItemType SymbolicLink -Path $env:APPDATA\Rime -Target $env:USERPROFILE\.dotfiles\rime
+```
+
+To use these configs in android:
+
+1. install fctix5 and rime, then open fctix5 and enable rime input method.
+2. find or create `/storage/emulated/0/Android/data/org.fcitx.fcitx5.android/files/data/rime`, copy the contents of `.dotfiles/rime/` to it.
 
 ## termux/
 
