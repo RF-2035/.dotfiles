@@ -8,3 +8,10 @@
 
 # nvim
 /nvim/lazy-lock.json
+
+# rime
+/rime/build/
+/rime/*.userdb/
+/rime/default.custom.yaml
+/rime/installation.yaml
+/rime/user.yaml
