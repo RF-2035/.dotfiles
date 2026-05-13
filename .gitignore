@@ -11,6 +11,7 @@
 
 # rime
 /rime/build/
+/rime/sync/
 /rime/*.userdb/
 /rime/default.custom.yaml
 /rime/installation.yaml
