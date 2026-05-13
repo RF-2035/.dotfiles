@@ -56,9 +56,18 @@ ln -s ~/.dotfiles/nvim ~/.config/nvim
 sudo ln -s ~/.dotfiles/nvim /root/.config/nvim
 ```
 
-To use these configs in windows:
+To use these configs in windows, run the following and add `~\.local\bin` to PATH:
 
-```powershell
+```pwsh
+scoop bucket add main
+scoop bucket add extras
+scoop bucket add nerd-fonts
+
+scoop install fzf git lazygit neovide neovim nodejs pandoc psmux ripgrep stylua yarn Iosevka-NF Noto-CJK-Mega-OTC
+npm install --prefix $env:USERPROFILE\.opt\gemini -g @google/gemini-cli
+
+mkdir $env:USERPROFILE\.local\bin
+New-Item -ItemType SymbolicLink -Path $env:USERPROFILE\.local\bin\gemini -Target $env:USERPROFILE\.opt\gemini\bin\gemini
 New-Item -ItemType SymbolicLink -Path $env:LOCALAPPDATA\nvim -Target $env:USERPROFILE\.dotfiles\nvim
 ```
 
@@ -99,7 +108,7 @@ A heavily customized termux configuration, including:
 
 To use these configs, clone this repository to ubuntu proot-distro home, **exit proot-distro**, replace nora with your username, then run:
 
-```
+```bash
 cd $PREFIX/var/lib/proot-distro/installed-rootfs/ubuntu/home/nora/.dotfiles
 mkdir -p ~/.local/bin ~/.local/share ~/.config
 stow -t ~ termux
