@@ -64,10 +64,3 @@ Set-PSReadLineKeyHandler -Chord "Tab" -Function MenuComplete
 Remove-PSReadLineKeyHandler -Chord 'Ctrl+c'
 Remove-PSReadLineKeyHandler -Chord 'Ctrl+v'
 
-# ┌───────────┐
-# │ Shortcuts │
-# └───────────┘
-
-function nnn {
-    ucrt64
-}
