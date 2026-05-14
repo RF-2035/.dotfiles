@@ -54,8 +54,8 @@ vim.opt.shortmess:append 'S'
 
 -- Windows-specific terminal setup
 if vim.fn.has 'win32' == 1 then
-  vim.opt.shell = 'pwsh.exe'
-  vim.opt.shellcmdflag = '-NoLogo -ExecutionPolicy RemoteSigned -Command'
+  vim.opt.shell = 'pwsh.exe -NoLogo'
+  vim.opt.shellcmdflag = '-ExecutionPolicy RemoteSigned -Command'
   vim.opt.shellquote = ''
   vim.opt.shellxquote = ''
 end

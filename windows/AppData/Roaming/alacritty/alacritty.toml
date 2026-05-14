@@ -41,4 +41,4 @@ duration = 150
 color = "#ffffff"
 
 [terminal]
-shell = "pwsh"
+shell = "pwsh -NoLogo"
