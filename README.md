@@ -66,10 +66,7 @@ scoop bucket add nerd-fonts
 scoop install fzf git lazygit neovide neovim nodejs pandoc psmux psutils refreshenv ripgrep stylua yarn Iosevka-NF Noto-CJK-Mega-OTC
 npm install --prefix $env:USERPROFILE\.opt\gemini -g @google/gemini-cli
 
-if (-not ($env:PATH -like "*$env:USERPROFILE\.local\bin*")) {
-    [Environment]::SetEnvironmentVariable("PATH", "$env:USERPROFILE\.local\bin;$env:PATH", "User")
-    refreshenv
-}
+if (-not ($env:PATH -like "*$env:USERPROFILE\.local\bin*")) { .\windows\.local\bin\setenv.ps1 PATH "$env:USERPROFILE\.local\bin;$env:PATH" }
 
 mkdir $env:USERPROFILE\.local\bin
 sudo ln -s $env:USERPROFILE\.opt\gemini\bin\gemini $env:USERPROFILE\.local\bin\gemini
@@ -123,9 +120,12 @@ stow -t ~ termux
 
 A linux user's windows configuarion, including:
 
-- configs for `alacritty`, `musikcube`, `psmux`, `pwsh`
-- autohotkey script `~\.ahk`
-- msys2 `.bashrc` and binary shortcuts inside `~\.local\bin`
+- configs for `alacritty`, `musikcube`, `msys2` (`.bashrc`), `psmux`, `pwsh`
+- autohotkey script `.ahk`
+- some scripts in `~\.local\bin`:
+    - `msys` (run msys2 commands within pwsh)
+    - `nnn` (run nnn within pwsh)
+    - `setenv` (set environment variables and refresh immediately)
 
 To use these configs in windows:
 
@@ -133,10 +133,7 @@ To use these configs in windows:
 scoop install pipx psutils refreshenv
 pipx install dploy
 
-if (-not ($env:PATH -like "*$env:USERPROFILE\.local\bin*")) {
-    [Environment]::SetEnvironmentVariable("PATH", "$env:USERPROFILE\.local\bin;$env:PATH", "User")
-    refreshenv
-}
+if (-not ($env:PATH -like "*$env:USERPROFILE\.local\bin*")) { .\windows\.local\bin\setenv.ps1 PATH "$env:USERPROFILE\.local\bin;$env:PATH" }
 
 mkdir $env:APPDATA\musikcube
 mkdir $env:USERPROFILE\.local\bin
@@ -156,12 +153,11 @@ msys-run pacman -S nnn
 sudo ln -s C:\ $env:USERPROFILE\.config\nnn\bookmarks\c
 sudo ln -s D:\ $env:USERPROFILE\.config\nnn\bookmarks\d
 
-[Environment]::SetEnvironmentVariable("EDITOR", "nvim", "User")
-[Environment]::SetEnvironmentVariable("MSYS2_PATH_TYPE", "inherit", "User")
-[Environment]::SetEnvironmentVariable("NNN_OPENER", "start", "User")
-[Environment]::SetEnvironmentVariable("VISUAL", "nvim", "User")
+setenv MSYS2_PATH_TYPE inherit
 
-refreshenv
+setenv EDITOR nvim
+setenv VISUAL nvim
+setenv NNN_OPENER start
 ```
 
 To remove windows AI:
