@@ -32,9 +32,11 @@ To use these configs in linux:
 
 ```bash
 mkdir -p ~/.local/bin ~/.local/share/applications ~/.config ~/.config/musikcube
+rm ~/.config/lazygit/config.yml
 stow linux
 
 sudo mkdir -p /root/.local/bin /root/.local/share/applications /root/.config /root/.config/musikcube
+sudo rm /root/.config/lazygit/config.yml
 sudo stow -t /root linux
 ```
 
@@ -137,6 +139,8 @@ if (-not ($env:PATH -like "*$env:USERPROFILE\.local\bin*")) { .\windows\.local\b
 
 mkdir $env:APPDATA\musikcube
 mkdir $env:USERPROFILE\.local\bin
+
+rm $env:LOCALAPPDATA\lazygit\config.yml
 
 sudo dploy stow windows $env:USERPROFILE
 ```
