@@ -25,8 +25,8 @@ To use these configs:
 
 Linux CLI configuration, including:
 
-- configs for bash, conda, dialog, tmux & alacritty
-- some scripts in ~/.local/bin
+- configs for `alacritty`, `bash`, `conda`, `dialog`, `musikcube`, `neovide`, `tmux`
+- some scripts in `~/.local/bin`
 
 To use these configs in linux:
 
@@ -101,15 +101,15 @@ To use these configs in android:
 
 A heavily customized termux configuration, including:
 
-- configs for bash, dialog & termux
+- configs for `bash`, `dialog`, `termux`
 - a startup script that:
-    1. manages startup services in ~/.local/share/init.d:
-        - lastd (restore last path)
-        - searxng (searxng server)
-    2. shows a menu with path selection and some shortcuts from ~/.local/bin:
-        - Neovim (start neovim in ubuntu)
-        - Ubuntu (Terminal) (start ubuntu proot-distro)
-        - Ubuntu (X11) (start ubuntu proot-distro with X11 GUI)
+    1. manages startup services in `~/.local/share/init.d`:
+        - `lastd` (restore last path)
+        - `searxng` (searxng server)
+    2. shows a menu with path selection and some shortcuts from `~/.local/bin`:
+        - `Neovim` (start neovim in ubuntu)
+        - `Ubuntu (Terminal)` (start ubuntu proot-distro)
+        - `Ubuntu (X11)` (start ubuntu proot-distro with X11 GUI)
 
 To use these configs, clone this repository to ubuntu proot-distro home, **exit proot-distro**, replace nora with your username, then run:
 
