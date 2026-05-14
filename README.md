@@ -9,7 +9,7 @@ A minimalist obsidian vault `.obsidian/` configuration.
 To use these configs:
 
 1. find or create `<obsidian_vault_directory>/.obsidian/`, delete all but `workspace.json` under it.
-2. run `stow -t <obsidian_vault_directory>/.obsidian .obsidian` (linux), `dploy stow .obsidian <obsidian_vault_directory>\.obsidian` (windows) or copy the `.obsidian` directory's contents to vault's `.obsidian` manually (android).
+2. run `stow -t <obsidian_vault_directory>/.obsidian .obsidian` (linux), `sudo dploy stow .obsidian <obsidian_vault_directory>\.obsidian` (windows) or copy the `.obsidian` directory's contents to vault's `.obsidian` manually (android).
 3. repeat step 1 and 2 whenever a new vault is created.
 
 ## firefox/
@@ -19,7 +19,7 @@ To use these configs:
 To use these configs:
 
 1. find firefox profile directory: ☰ → Help → More troubleshooting information → Profile Directory (usually ending with `default-release`).
-2. run `stow -t <profile_directory> firefox/default-release` (linux) or `dploy stow firefox\default-release <profile_directory>` (windows) in the root directory of this repository.
+2. run `stow -t <profile_directory> firefox/default-release` (linux) or `sudo dploy stow firefox\default-release <profile_directory>` (windows) in the root directory of this repository.
 
 ## linux/
 
@@ -56,19 +56,24 @@ ln -s ~/.dotfiles/nvim ~/.config/nvim
 sudo ln -s ~/.dotfiles/nvim /root/.config/nvim
 ```
 
-To use these configs in windows, run the following and add `~\.local\bin` to PATH:
+To use these configs in windows:
 
-```pwsh
+```powershell
 scoop bucket add main
 scoop bucket add extras
 scoop bucket add nerd-fonts
 
-scoop install fzf git lazygit neovide neovim nodejs pandoc psmux ripgrep stylua yarn Iosevka-NF Noto-CJK-Mega-OTC
+scoop install fzf git lazygit neovide neovim nodejs pandoc psmux psutils refreshenv ripgrep stylua yarn Iosevka-NF Noto-CJK-Mega-OTC
 npm install --prefix $env:USERPROFILE\.opt\gemini -g @google/gemini-cli
 
+if (-not ($env:PATH -like "*$env:USERPROFILE\.local\bin*")) {
+    [Environment]::SetEnvironmentVariable("PATH", "$env:USERPROFILE\.local\bin;$env:PATH", "User")
+    refreshenv
+}
+
 mkdir $env:USERPROFILE\.local\bin
-New-Item -ItemType SymbolicLink -Path $env:USERPROFILE\.local\bin\gemini -Target $env:USERPROFILE\.opt\gemini\bin\gemini
-New-Item -ItemType SymbolicLink -Path $env:LOCALAPPDATA\nvim -Target $env:USERPROFILE\.dotfiles\nvim
+sudo ln -s $env:USERPROFILE\.opt\gemini\bin\gemini $env:USERPROFILE\.local\bin\gemini
+sudo ln -s $env:USERPROFILE\.dotfiles\nvim $env:LOCALAPPDATA\nvim
 ```
 
 ## rime/
@@ -83,8 +88,8 @@ ln -s ~/.dotfiles/rime ~/.local/share/fcitx5/rime
 
 To use these configs in windows:
 
-```pwsh
-New-Item -ItemType SymbolicLink -Path $env:APPDATA\Rime -Target $env:USERPROFILE\.dotfiles\rime
+```powershell
+sudo ln -s $env:USERPROFILE\.dotfiles\rime $env:APPDATA\Rime
 ```
 
 To use these configs in android:
@@ -118,17 +123,50 @@ stow -t ~ termux
 
 A linux user's windows configuarion, including:
 
-- configs for pwsh, psmux & alacritty
-- an autohotkey script ~\\.ahk
+- configs for `alacritty`, `musikcube`, `psmux`, `pwsh`
+- autohotkey script `~\.ahk`
+- msys2 `.bashrc` and binary shortcuts inside `~\.local\bin`
 
 To use these configs in windows:
 
-```pwsh
-scoop install pipx
-
-pipx ensurepath
+```powershell
+scoop install pipx psutils refreshenv
 pipx install dploy
 
+if (-not ($env:PATH -like "*$env:USERPROFILE\.local\bin*")) {
+    [Environment]::SetEnvironmentVariable("PATH", "$env:USERPROFILE\.local\bin;$env:PATH", "User")
+    refreshenv
+}
+
 mkdir $env:APPDATA\musikcube
-dploy stow windows $env:USERPROFILE
+mkdir $env:USERPROFILE\.local\bin
+
+sudo dploy stow windows $env:USERPROFILE
+```
+
+To use these configs with msys2:
+
+```powershell
+rm -r -fo C:\msys64\home\$env:USERNAME
+sudo ln -s $env:USERPROFILE C:\msys64\home\$env:USERNAME
+
+msys-run pacman -Syu
+msys-run pacman -S nnn
+
+sudo ln -s C:\ $env:USERPROFILE\.config\nnn\bookmarks\c
+sudo ln -s D:\ $env:USERPROFILE\.config\nnn\bookmarks\d
+
+[Environment]::SetEnvironmentVariable("EDITOR", "nvim", "User")
+[Environment]::SetEnvironmentVariable("MSYS2_PATH_TYPE", "inherit", "User")
+[Environment]::SetEnvironmentVariable("NNN_OPENER", "start", "User")
+[Environment]::SetEnvironmentVariable("VISUAL", "nvim", "User")
+
+refreshenv
+```
+
+To remove windows AI:
+
+```powershell
+sudo powershell.exe
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/zoicware/RemoveWindowsAI/main/RemoveWindowsAi.ps1")))
 ```
