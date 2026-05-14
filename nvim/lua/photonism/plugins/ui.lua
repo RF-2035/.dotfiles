@@ -62,7 +62,7 @@ return {
         --   },
         -- },
         renderer = {
-          root_folder_label = vim.fn.has 'win32' == 1 and ':~:s?$?\\\\..?' or ':~:s?$?/..?',
+          root_folder_label = vim.fn.has 'win32' == 1 and ':~:s?\\\\$??:s?$?\\\\..?' or ':~:s?$?/..?',
           icons = {
             glyphs = {
               git = {
