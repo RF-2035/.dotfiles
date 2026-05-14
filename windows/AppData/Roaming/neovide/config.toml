@@ -1,4 +1,2 @@
-frame = "none"
-
 [box-drawing.sizes]
 default = [1, 3]
