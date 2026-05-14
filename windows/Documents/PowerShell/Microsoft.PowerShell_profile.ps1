@@ -21,7 +21,7 @@ function prompt {
     $folder = if ($isHome) { "~" } else { Split-Path $PWD -Leaf }
     $handle = if ($isAdmin) { "# " } else { "$ " }
 
-    $host.UI.RawUI.WindowTitle = "$($PWD.Path.Replace($HOME, "~"))"
+    $host.UI.RawUI.WindowTitle = "$($PWD.Path.Replace($HOME, "~")) - PowerShell"
     return "$($PSStyle.Foreground.Green)$($PSStyle.Bold)${user}$($PSStyle.Foreground.Cyan)${folder}$($PSStyle.Reset)${handle}"
 }
 
