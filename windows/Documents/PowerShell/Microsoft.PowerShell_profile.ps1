@@ -17,12 +17,12 @@ function prompt {
     $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
     $isHome = $PWD.Path -eq $HOME
 
-    $user = if ($isAdmin) { "root" } else { $env:USERNAME }
+    $user = if ($isAdmin) { "root@$($env:COMPUTERNAME): " } else { "$($env:USERNAME)@$($env:COMPUTERNAME): " }
     $folder = if ($isHome) { "~" } else { Split-Path $PWD -Leaf }
     $handle = if ($isAdmin) { "# " } else { "$ " }
 
     $host.UI.RawUI.WindowTitle = "$($PWD.Path.Replace($HOME, "~"))"
-    return "`e[32;1m${user}@$($env:COMPUTERNAME): `e[36m${folder}`e[0m${handle}"
+    return "$($PSStyle.Foreground.Green)$($PSStyle.Bold)${user}$($PSStyle.Foreground.Cyan)${folder}$($PSStyle.Reset)${handle}"
 }
 
 # ┌──────────────────────┐
