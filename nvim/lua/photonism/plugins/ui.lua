@@ -10,7 +10,7 @@ return {
         override = {
           nnn = { icon = '', color = '#00AFFF', cterm_color = '39', name = 'Nnn' },
           lazygit = { icon = '', color = '#B83A1D', cterm_color = '160', name = 'LazyGit' },
-          gemini = { icon = '✦', color = '#4285F4', cterm_color = '33', name = 'Gemini' },
+          gemini = { icon = '󰫢', color = '#4285F4', cterm_color = '33', name = 'Gemini' },
         },
       }
     end,
